@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unati Cooperative – ERP Workflow Architecture</title>
+  <style>
+    :root {
+      --primary: #1a6b3c;
+      --primary-light: #2d9e5f;
+      --accent: #f0a500;
+      --accent-dark: #c27f00;
+      --bg: #f4f7f4;
+      --card: #ffffff;
+      --text: #1c2b1c;
+      --muted: #6b7c6b;
+      --border: #d4e4d4;
+      --finance: #1565C0;
+      --finance-light: #E3F2FD;
+      --inventory: #6A1B9A;
+      --inventory-light: #F3E5F5;
+      --people: #BF360C;
+      --people-light: #FBE9E7;
+      --center: #1a6b3c;
+      --center-light: #E8F5E9;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* ── HERO ─────────────────────────────────────────────── */
+    .hero {
+      background: linear-gradient(135deg, #0d3d21 0%, #1a6b3c 55%, #2d9e5f 100%);
+      color: #fff;
+      padding: 56px 40px 48px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .hero-inner { position: relative; max-width: 1200px; margin: 0 auto; }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 20px;
+      padding: 4px 16px;
+      font-size: 12px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .hero h1 {
+      font-size: clamp(28px, 4vw, 48px);
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+    .hero h1 span { color: var(--accent); }
+    .hero p {
+      font-size: 17px;
+      opacity: 0.85;
+      max-width: 680px;
+      margin-bottom: 32px;
+    }
+    .hero-meta {
+      display: flex;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+    .hero-meta div { display: flex; flex-direction: column; }
+    .hero-meta .label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.65; }
+    .hero-meta .value { font-size: 15px; font-weight: 600; }
+
+    /* ── LAYOUT ───────────────────────────────────────────── */
+    .wrapper { max-width: 1200px; margin: 0 auto; padding: 40px 24px 80px; }
+
+    /* ── SECTION HEADER ───────────────────────────────────── */
+    .section-header {
+      margin: 48px 0 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-header .icon {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .section-header h2 {
+      font-size: 22px;
+      font-weight: 700;
+    }
+    .section-header p { font-size: 14px; color: var(--muted); margin-top: 2px; }
+
+    /* ── CARDS GRID ───────────────────────────────────────── */
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(460px, 1fr)); gap: 20px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .card h3 { font-size: 16px; font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+    .card .badge {
+      font-size: 11px;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-weight: 600;
+    }
+
+    /* ── MODULE COLORS ────────────────────────────────────── */
+    .finance   { border-top: 4px solid var(--finance); }
+    .inventory { border-top: 4px solid var(--inventory); }
+    .people    { border-top: 4px solid var(--people); }
+    .center-m  { border-top: 4px solid var(--center); }
+
+    .badge-finance   { background: var(--finance-light);   color: var(--finance); }
+    .badge-inventory { background: var(--inventory-light); color: var(--inventory); }
+    .badge-people    { background: var(--people-light);    color: var(--people); }
+    .badge-center    { background: var(--center-light);    color: var(--center); }
+
+    /* ── FLOW STEPS ───────────────────────────────────────── */
+    .flow {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .flow-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 10px 0;
+      position: relative;
+    }
+    .flow-step:not(:last-child)::before {
+      content: '';
+      position: absolute;
+      left: 16px;
+      top: 36px;
+      width: 2px;
+      height: calc(100% - 10px);
+      background: var(--border);
+    }
+    .step-dot {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+    }
+    .step-body { flex: 1; padding-top: 4px; }
+    .step-body strong { display: block; font-size: 14px; font-weight: 600; }
+    .step-body span { font-size: 12px; color: var(--muted); }
+
+    .dot-finance   { background: var(--finance-light);   color: var(--finance); }
+    .dot-inventory { background: var(--inventory-light); color: var(--inventory); }
+    .dot-people    { background: var(--people-light);    color: var(--people); }
+
+    /* ── FEATURE LIST ─────────────────────────────────────── */
+    .feat-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .feat-list li {
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: 14px; line-height: 1.5;
+    }
+    .feat-list li .check {
+      width: 20px; height: 20px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; flex-shrink: 0; margin-top: 1px;
+    }
+    .check-f { background: var(--finance-light);   color: var(--finance); }
+    .check-i { background: var(--inventory-light); color: var(--inventory); }
+    .check-p { background: var(--people-light);    color: var(--people); }
+    .check-c { background: var(--center-light);    color: var(--center); }
+
+    /* ── ROLE TABLE ───────────────────────────────────────── */
+    .role-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .role-table th {
+      background: #f0f5f0;
+      padding: 10px 14px;
+      text-align: left;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--muted);
+      border-bottom: 2px solid var(--border);
+    }
+    .role-table td {
+      padding: 11px 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    .role-table tr:last-child td { border-bottom: none; }
+    .role-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .access-tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      margin: 2px;
+      background: #f0f5f0;
+      color: var(--text);
+    }
+
+    /* ── CENTRAL HUB DIAGRAM ──────────────────────────────── */
+    .hub-diagram {
+      background: linear-gradient(135deg, #f0f9f3, #e8f5e9);
+      border: 2px dashed #a8d5b5;
+      border-radius: 16px;
+      padding: 32px;
+      text-align: center;
+      margin: 24px 0;
+    }
+    .hub-center {
+      display: inline-block;
+      background: linear-gradient(135deg, #1a6b3c, #2d9e5f);
+      color: white;
+      border-radius: 50%;
+      width: 120px; height: 120px;
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column;
+      font-weight: 700;
+      font-size: 13px;
+      text-align: center;
+      margin: 0 auto 28px;
+      box-shadow: 0 8px 24px rgba(26,107,60,0.3);
+      line-height: 1.3;
+    }
+    .hub-center .hub-icon { font-size: 28px; margin-bottom: 4px; }
+    .hub-spokes {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 16px;
+      margin-top: 8px;
+    }
+    .spoke {
+      background: white;
+      border-radius: 12px;
+      padding: 16px 12px;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .spoke .spoke-icon { font-size: 22px; margin-bottom: 6px; }
+    .spoke .spoke-sub { font-size: 11px; color: var(--muted); font-weight: 400; margin-top: 2px; }
+
+    /* ── DATA FLOW BANNER ─────────────────────────────────── */
+    .data-flow {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      overflow-x: auto;
+      padding: 20px 0 8px;
+    }
+    .df-step {
+      flex: 1;
+      min-width: 100px;
+      text-align: center;
+      font-size: 12px;
+    }
+    .df-box {
+      padding: 10px 8px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+    .df-sub { font-size: 11px; color: var(--muted); }
+    .df-arrow {
+      font-size: 20px;
+      color: var(--muted);
+      flex-shrink: 0;
+      padding: 0 4px;
+    }
+
+    /* ── HIGHLIGHT BOX ────────────────────────────────────── */
+    .highlight {
+      background: linear-gradient(135deg, #fff9e6, #fff3cc);
+      border: 1px solid #f0c040;
+      border-left: 4px solid var(--accent);
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin: 20px 0;
+      font-size: 14px;
+    }
+    .highlight strong { display: block; margin-bottom: 4px; font-size: 15px; color: var(--accent-dark); }
+
+    /* ── PILL ROW ─────────────────────────────────────────── */
+    .pill-row {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px;
+    }
+    .pill {
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid;
+    }
+
+    /* ── FOOTER ───────────────────────────────────────────── */
+    .footer {
+      background: #1c2b1c;
+      color: rgba(255,255,255,0.7);
+      text-align: center;
+      padding: 24px;
+      font-size: 13px;
+      margin-top: 60px;
+    }
+    .footer strong { color: white; }
+
+    /* ── PAGE BREAK HELPER ────────────────────────────────── */
+    .page-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--muted);
+      margin-top: 56px;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .page-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    @media print {
+      body { background: white; }
+      .hero { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════
+     HERO
+════════════════════════════════════════════════════════════ -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">ERP Solution Proposal</div>
+    <h1>Zoho ERP <span>Workflow Architecture</span><br>for Unati Cooperative</h1>
+    <p>A centralised digital ecosystem spanning Finance, Inventory, and People & Payroll — built for agricultural cooperatives, community programs, and multi-state operations.</p>
+    <div class="hero-meta">
+      <div><span class="label">Platform</span><span class="value">Zoho One / Zoho ERP Suite</span></div>
+      <div><span class="label">Client</span><span class="value">Unati Cooperative Society</span></div>
+      <div><span class="label">Modules</span><span class="value">Finance · Inventory · People & Payroll</span></div>
+      <div><span class="label">Prepared</span><span class="value">March 2026</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="wrapper">
+
+<!-- ══════════════════════════════════════════════════════════
+     1. WHY A CENTRALISED ERP
+════════════════════════════════════════════════════════════ -->
+<div class="page-title">01 — Overview</div>
+
+<div class="section-header">
+  <div class="icon" style="background:#e8f5e9;">🏛️</div>
+  <div><h2>Centralised ERP — One Platform, All Operations</h2>
+       <p>How Zoho ERP unifies every department at Unati</p></div>
+</div>
+
+<div class="highlight">
+  <strong>The Core Idea</strong>
+  Today, Finance, Inventory, and HR teams work in silos — separate spreadsheets, disconnected records, manual reconciliations. A centralised Zoho ERP gives <em>every role one source of truth</em>: one login, one dashboard, real-time data flowing across all departments automatically.
+</div>
+
+<div class="hub-diagram">
+  <div class="hub-center">
+    <div class="hub-icon">🌐</div>
+    Zoho ERP<br>Central Hub
+  </div>
+  <div class="hub-spokes">
+    <div class="spoke">
+      <div class="spoke-icon">💰</div>
+      Finance &amp; Accounts
+      <div class="spoke-sub">Zoho Books</div>
+    </div>
+    <div class="spoke">
+      <div class="spoke-icon">📦</div>
+      Inventory &amp; Supply Chain
+      <div class="spoke-sub">Zoho Inventory</div>
+    </div>
+    <div class="spoke">
+      <div class="spoke-icon">👥</div>
+      People &amp; HR
+      <div class="spoke-sub">Zoho People</div>
+    </div>
+    <div class="spoke">
+      <div class="spoke-icon">💵</div>
+      Payroll &amp; Compliance
+      <div class="spoke-sub">Zoho Payroll</div>
+    </div>
+    <div class="spoke">
+      <div class="spoke-icon">📊</div>
+      Analytics &amp; Reports
+      <div class="spoke-sub">Zoho Analytics</div>
+    </div>
+    <div class="spoke">
+      <div class="spoke-icon">🔐</div>
+      Role-Based Access
+      <div class="spoke-sub">Zoho Directory</div>
+    </div>
+    <div class="spoke">
+      <div class="spoke-icon">📁</div>
+      Documents &amp; Approvals
+      <div class="spoke-sub">Zoho WorkDrive</div>
+    </div>
+    <div class="spoke">
+      <div class="spoke-icon">📱</div>
+      Field &amp; Mobile Access
+      <div class="spoke-sub">Zoho Mobile Apps</div>
+    </div>
+  </div>
+</div>
+
+<div class="grid-4" style="margin-top:20px;">
+  <div class="card">
+    <h3>🔄 Real-Time Sync</h3>
+    <p style="font-size:13px;color:var(--muted);">A purchase order in Inventory auto-updates payables in Finance — no manual re-entry.</p>
+  </div>
+  <div class="card">
+    <h3>🔐 Role-Based Access</h3>
+    <p style="font-size:13px;color:var(--muted);">Each user sees only what their role requires. Field workers, managers, and admins have separate dashboards.</p>
+  </div>
+  <div class="card">
+    <h3>📱 Mobile-Ready</h3>
+    <p style="font-size:13px;color:var(--muted);">Field agents, bio-resource collectors, and supervisors can update records from the field via mobile app.</p>
+  </div>
+  <div class="card">
+    <h3>📊 Unified Reporting</h3>
+    <p style="font-size:13px;color:var(--muted);">Finance, stock, and headcount data combine in one analytics dashboard for management decisions.</p>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     2. FINANCE MODULE
+════════════════════════════════════════════════════════════ -->
+<div class="page-title" style="margin-top:60px;">02 — Finance Module</div>
+
+<div class="section-header">
+  <div class="icon" style="background:var(--finance-light);">💰</div>
+  <div><h2>Finance &amp; Accounts (Zoho Books)</h2>
+       <p>End-to-end financial management — from fund receipt to compliance reporting</p></div>
+</div>
+
+<div class="grid-2">
+
+  <!-- Workflow -->
+  <div class="card finance">
+    <h3>📋 Finance Workflow <span class="badge badge-finance">Zoho Books</span></h3>
+    <div class="flow">
+      <div class="flow-step">
+        <div class="step-dot dot-finance">1</div>
+        <div class="step-body">
+          <strong>Budget Planning &amp; Fund Management</strong>
+          <span>Program budgets set per project/department. Donor funds, government grants &amp; cooperative revenues tracked separately under different cost centres.</span>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-dot dot-finance">2</div>
+        <div class="step-body">
+          <strong>Purchase &amp; Expense Approvals</strong>
+          <span>Purchase requests raised online → Finance reviews → Manager approves → Payment released. Multi-level approval workflow, fully digital.</span>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-dot dot-finance">3</div>
+        <div class="step-body">
+          <strong>Accounts Payable — Vendor Payments</strong>
+          <span>Farmer/collector payments, supplier invoices, and service payments managed. Bulk payment batches with bank integration (NEFT/RTGS).</span>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-dot dot-finance">4</div>
+        <div class="step-body">
+          <strong>Accounts Receivable — Sales &amp; Collections</strong>
+          <span>Invoices auto-generated for product sales (jaggery, processed goods, ODOP/PUGMARK products). Payment reminders automated.</span>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-dot dot-finance">5</div>
+        <div class="step-body">
+          <strong>GST &amp; Statutory Compliance</strong>
+          <span>Auto GST calculation, GSTR-1/3B filing support, TDS tracking. Cooperative-specific compliance handled.</span>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-dot dot-finance" style="background:#1565C0;color:white;">✓</div>
+        <div class="step-body">
+          <strong>Financial Reporting &amp; Audit</strong>
+          <span>P&amp;L, Balance Sheet, Cash Flow — real-time. Project-wise fund utilisation reports for donor/government reporting.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Features -->
+  <div style="display:flex;flex-direction:column;gap:16px;">
+    <div class="card finance">
+      <h3>✨ Key Finance Features</h3>
+      <ul class="feat-list">
+        <li><span class="check check-f">✓</span><span><strong>Multi-Cost Centre Accounting</strong> — Separate books for each program (Women Empowerment, Bamboo, ODOP, Nutrition, etc.)</span></li>
+        <li><span class="check check-f">✓</span><span><strong>Farmer/Collector Payments</strong> — Bio-resource collector payments tracked with produce quantity linkage</span></li>
+        <li><span class="check check-f">✓</span><span><strong>Grant &amp; Donor Fund Tracking</strong> — Ring-fenced accounts for NCEL, NCOL, BBSSL and government fund utilisation</span></li>
+        <li><span class="check check-f">✓</span><span><strong>Multi-State Operations</strong> — Consolidated books across state-level entities with inter-company transactions</span></li>
+        <li><span class="check check-f">✓</span><span><strong>Bank Reconciliation</strong> — Automated bank feed integration; one-click reconciliation</span></li>
+        <li><span class="check check-f">✓</span><span><strong>Mobile Expense Submission</strong> — Field staff submit expenses with photo receipts from app</span></li>
+      </ul>
+    </div>
+
+    <div class="card" style="background:var(--finance-light);border-color:#90caf9;">
+      <h3 style="color:var(--finance);">📊 Finance Dashboard — What Management Sees</h3>
+      <div class="grid-2" style="gap:10px;margin-top:8px;">
+        <div style="background:white;border-radius:8px;padding:12px;font-size:13px;">
+          <div style="font-size:20px;font-weight:700;color:var(--finance);">₹ Live</div>
+          <div>Cash Position</div>
+          <div style="font-size:11px;color:var(--muted);">Per bank account, real-time</div>
+        </div>
+        <div style="background:white;border-radius:8px;padding:12px;font-size:13px;">
+          <div style="font-size:20px;font-weight:700;color:#d32f2f;">⚠ Alerts</div>
+          <div>Budget Overruns</div>
+          <div style="font-size:11px;color:var(--muted);">Threshold-based alerts</div>
+        </div>
+        <div style="background:white;border-radius:8px;padding:12px;font-size:13px;">
+          <div style="font-size:20px;font-weight:700;color:#388e3c;">↑ Trend</div>
+          <div>Revenue vs Expense</div>
+          <div style="font-size:11px;color:var(--muted);">Monthly comparison</div>
+        </div>
+        <div style="background:white;border-radius:8px;padding:12px;font-size:13px;">
+          <div style="font-size:20px;font-weight:700;color:var(--accent-dark);">📋 Queue</div>
+          <div>Pending Approvals</div>
+          <div style="font-size:11px;color:var(--muted);">One-click approve/reject</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     3. INVENTORY MODULE
+════════════════════════════════════════════════════════════ -->
+<div class="page-title" style="margin-top:60px;">03 — Inventory Module</div>
+
+<div class="section-header">
+  <div class="icon" style="background:var(--inventory-light);">📦</div>
+  <div><h2>Inventory &amp; Supply Chain (Zoho Inventory)</h2>
+       <p>Bio-resource collection → Processing → Value Addition → Sales — all tracked digitally</p></div>
+</div>
+
+<div class="grid-2">
+
+  <div class="card inventory">
+    <h3>📋 Inventory Workflow <span class="badge badge-inventory">Zoho Inventory</span></h3>
+    <div class="flow">
+      <div class="flow-step">
+        <div class="step-dot dot-inventory">1</div>
+        <div class="step-body">
+          <strong>Field Collection &amp; Procurement</strong>
+          <span>Bio-resource collectors/farmers log harvest quantities via mobile app. Purchase orders auto-created for approved quantities (bamboo, jaggery, fruits, etc.).</span>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-dot dot-inventory">2</div>
+        <div class="step-body">
+          <strong>Goods Receipt &amp; Quality Check</strong>
+          <span>Warehouse staff receive goods against PO. Quality inspection recorded. Non-conforming stock flagged for rejection. GRN auto-triggers payment in Finance.</span>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-dot dot-inventory">3</div>
+        <div class="step-body">
+          <strong>Warehouse &amp; Stock Management</strong>
+          <span>Real-time stock levels per location/warehouse. Lot/batch tracking for agricultural produce. FIFO inventory valuation. Low-stock alerts automated.</span>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-dot dot-inventory">4</div>
+        <div class="step-body">
+          <strong>Processing &amp; Value Addition</strong>
+          <span>Raw stock converted to finished goods (e.g. raw bamboo → processed bamboo products; raw sugarcane → jaggery). BOM-based production tracking.</span>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-dot dot-inventory">5</div>
+        <div class="step-body">
+          <strong>Sales Order &amp; Dispatch</strong>
+          <span>B2B/B2G sales orders created. ODOP/PUGMARK brand products fulfilled. Dispatch with delivery tracking. Invoice auto-generated in Zoho Books.</span>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-dot dot-inventory" style="background:#6A1B9A;color:white;">✓</div>
+        <div class="step-body">
+          <strong>Returns &amp; Reporting</strong>
+          <span>Stock returns, wastage write-offs, and inventory audit reports. Monthly stock reconciliation vs Finance records.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:16px;">
+    <div class="card inventory">
+      <h3>✨ Key Inventory Features</h3>
+      <ul class="feat-list">
+        <li><span class="check check-i">✓</span><span><strong>Farmer/Collector Registry</strong> — Each supplier registered with contact, location, crop type, and payment details</span></li>
+        <li><span class="check check-i">✓</span><span><strong>Lot &amp; Batch Tracking</strong> — Traceability from farm to final product for quality &amp; compliance</span></li>
+        <li><span class="check check-i">✓</span><span><strong>Multi-Warehouse Support</strong> — Separate stock books per processing centre or district warehouse</span></li>
+        <li><span class="check check-i">✓</span><span><strong>Production / BOM Module</strong> — Raw material consumption → Finished goods produced, with yield tracking</span></li>
+        <li><span class="check check-i">✓</span><span><strong>ODOP / PUGMARK Product Catalogue</strong> — SKU management for branded products with pricing &amp; packaging info</span></li>
+        <li><span class="check check-i">✓</span><span><strong>Auto Reorder Points</strong> — System auto-raises PO when stock falls below defined minimum levels</span></li>
+        <li><span class="check check-i">✓</span><span><strong>Finance Integration</strong> — Every GRN triggers AP entry; every invoice triggers AR entry — zero manual posting</span></li>
+      </ul>
+    </div>
+
+    <div class="card" style="background:var(--inventory-light);border-color:#ce93d8;">
+      <h3 style="color:var(--inventory);">🗺️ Supply Chain at Unati</h3>
+      <div class="data-flow" style="flex-direction:column;gap:6px;padding:8px 0;">
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;">
+          <span style="background:#6A1B9A;color:white;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:600;">Farmers &amp; Collectors</span>
+          <span style="color:var(--muted);">→</span>
+          <span style="font-size:12px;color:var(--muted);">Mobile app harvest entry</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;">
+          <span style="background:#7B1FA2;color:white;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:600;">Collection Centre</span>
+          <span style="color:var(--muted);">→</span>
+          <span style="font-size:12px;color:var(--muted);">GRN, weighment, quality check</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;">
+          <span style="background:#8E24AA;color:white;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:600;">Processing Unit</span>
+          <span style="color:var(--muted);">→</span>
+          <span style="font-size:12px;color:var(--muted);">BOM-based production, value addition</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;">
+          <span style="background:#AB47BC;color:white;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:600;">Finished Goods Store</span>
+          <span style="color:var(--muted);">→</span>
+          <span style="font-size:12px;color:var(--muted);">Stock ready for dispatch</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;">
+          <span style="background:#CE93D8;color:#4A148C;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:600;">B2B / ODOP / Govt Sales</span>
+          <span style="color:var(--muted);">→</span>
+          <span style="font-size:12px;color:var(--muted);">Dispatch + auto invoice</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     4. PEOPLE & PAYROLL MODULE
+════════════════════════════════════════════════════════════ -->
+<div class="page-title" style="margin-top:60px;">04 — People &amp; Payroll Module</div>
+
+<div class="section-header">
+  <div class="icon" style="background:var(--people-light);">👥</div>
+  <div><h2>People, HR &amp; Payroll (Zoho People + Zoho Payroll)</h2>
+       <p>Full employee lifecycle management — from onboarding field workers to statutory compliance</p></div>
+</div>
+
+<div class="grid-2">
+
+  <div class="card people">
+    <h3>📋 People &amp; Payroll Workflow <span class="badge badge-people">Zoho People + Payroll</span></h3>
+    <div class="flow">
+      <div class="flow-step">
+        <div class="step-dot dot-people">1</div>
+        <div class="step-body">
+          <strong>Employee Onboarding</strong>
+          <span>Digital onboarding for staff, field workers, daily-wage workers &amp; program beneficiaries. Documents, bank details, and role assignments captured online. Aadhaar/PAN linked.</span>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-dot dot-people">2</div>
+        <div class="step-body">
+          <strong>Attendance &amp; Leave Management</strong>
+          <span>Biometric/mobile-based attendance for office staff. Field worker attendance via geo-tagged check-in. Leave requests, approvals, and balances — all on the app.</span>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-dot dot-people">3</div>
+        <div class="step-body">
+          <strong>Skill &amp; Training Tracking</strong>
+          <span>Skills registered per employee — bamboo processing, product labelling, SHG management, etc. Training programs logged and completion tracked against program goals.</span>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-dot dot-people">4</div>
+        <div class="step-body">
+          <strong>Performance Management</strong>
+          <span>KPI tracking for supervisors and program leads. Goal-setting aligned to program deliverables (e.g. # of beneficiaries served, MT of bio-resource collected).</span>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-dot dot-people">5</div>
+        <div class="step-body">
+          <strong>Payroll Processing</strong>
+          <span>One-click monthly payroll run. Wages auto-calculated from attendance. Daily-wage workers paid per manday. Salary slips generated and emailed automatically.</span>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-dot dot-people" style="background:#BF360C;color:white;">✓</div>
+        <div class="step-body">
+          <strong>Statutory Compliance</strong>
+          <span>PF, ESI, PT, TDS auto-calculated &amp; filed. Form 16, payslips, and compliance registers generated. Labour law compliance for cooperative/NGO structure.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:16px;">
+    <div class="card people">
+      <h3>✨ Key People &amp; Payroll Features</h3>
+      <ul class="feat-list">
+        <li><span class="check check-p">✓</span><span><strong>Multiple Worker Categories</strong> — Regular staff, contract workers, daily-wage field workers, program coordinators — all managed under one system</span></li>
+        <li><span class="check check-p">✓</span><span><strong>SHG / Beneficiary Register</strong> — Women SHG members, landless farmer beneficiaries tracked with program participation history</span></li>
+        <li><span class="check check-p">✓</span><span><strong>Geo-Tagged Field Attendance</strong> — Field supervisors mark attendance with GPS location — prevents buddy punching</span></li>
+        <li><span class="check check-p">✓</span><span><strong>Manday Calculation</strong> — System auto-calculates total mandays generated (a key KPI for government reporting)</span></li>
+        <li><span class="check check-p">✓</span><span><strong>DBT / Direct Benefit Transfer</strong> — Daily-wage payments directly to worker bank accounts via integrated payment gateway</span></li>
+        <li><span class="check check-p">✓</span><span><strong>Payroll → Finance Integration</strong> — Approved payroll auto-creates journal entries in Zoho Books — zero double entry</span></li>
+      </ul>
+    </div>
+
+    <div class="card" style="background:var(--people-light);border-color:#ef9a9a;">
+      <h3 style="color:var(--people);">👥 Worker Categories at Unati</h3>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;background:white;border-radius:8px;padding:10px 14px;font-size:13px;">
+          <span>🏢 Office &amp; Management Staff</span><span style="background:var(--people-light);color:var(--people);border-radius:6px;padding:2px 8px;font-size:11px;font-weight:600;">Monthly Payroll</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;background:white;border-radius:8px;padding:10px 14px;font-size:13px;">
+          <span>🌾 Field / Program Coordinators</span><span style="background:var(--people-light);color:var(--people);border-radius:6px;padding:2px 8px;font-size:11px;font-weight:600;">Monthly + Allowances</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;background:white;border-radius:8px;padding:10px 14px;font-size:13px;">
+          <span>🪵 Processing Unit Workers</span><span style="background:var(--people-light);color:var(--people);border-radius:6px;padding:2px 8px;font-size:11px;font-weight:600;">Daily Wage</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;background:white;border-radius:8px;padding:10px 14px;font-size:13px;">
+          <span>♀ SHG / Women Beneficiaries</span><span style="background:var(--people-light);color:var(--people);border-radius:6px;padding:2px 8px;font-size:11px;font-weight:600;">Program Register</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;background:white;border-radius:8px;padding:10px 14px;font-size:13px;">
+          <span>🚜 Bio-Resource Collectors</span><span style="background:var(--people-light);color:var(--people);border-radius:6px;padding:2px 8px;font-size:11px;font-weight:600;">Per MT / Lot Payment</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     5. USER ROLES & ACCESS
+════════════════════════════════════════════════════════════ -->
+<div class="page-title" style="margin-top:60px;">05 — User Roles &amp; Access</div>
+
+<div class="section-header">
+  <div class="icon" style="background:#e8f5e9;">🔐</div>
+  <div><h2>Who Works How — Role-Based Access</h2>
+       <p>Every user type gets a personalised view with access only to what they need</p></div>
+</div>
+
+<div class="card">
+  <table class="role-table">
+    <thead>
+      <tr>
+        <th>User Role</th>
+        <th>Finance Access</th>
+        <th>Inventory Access</th>
+        <th>People &amp; Payroll Access</th>
+        <th>Dashboard</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="role-badge" style="background:#e8f5e9;color:#1a6b3c;">CEO / Management</span></td>
+        <td><span class="access-tag">Full View</span><span class="access-tag">Reports</span></td>
+        <td><span class="access-tag">Full View</span><span class="access-tag">Reports</span></td>
+        <td><span class="access-tag">Full View</span><span class="access-tag">Reports</span></td>
+        <td>Executive Dashboard — All KPIs</td>
+      </tr>
+      <tr>
+        <td><span class="role-badge" style="background:var(--finance-light);color:var(--finance);">Finance Manager</span></td>
+        <td><span class="access-tag">Full Edit</span><span class="access-tag">Approve PO</span><span class="access-tag">GST Filing</span></td>
+        <td><span class="access-tag">View GRNs</span><span class="access-tag">View POs</span></td>
+        <td><span class="access-tag">Approve Payroll</span></td>
+        <td>Finance Dashboard — AP/AR/Cash</td>
+      </tr>
+      <tr>
+        <td><span class="role-badge" style="background:var(--finance-light);color:var(--finance);">Accounts Executive</span></td>
+        <td><span class="access-tag">Invoicing</span><span class="access-tag">Payments</span><span class="access-tag">Reconciliation</span></td>
+        <td><span class="access-tag">View Only</span></td>
+        <td><span class="access-tag">Expense Vouchers</span></td>
+        <td>Transaction Queue</td>
+      </tr>
+      <tr>
+        <td><span class="role-badge" style="background:var(--inventory-light);color:var(--inventory);">Inventory Manager</span></td>
+        <td><span class="access-tag">Raise PO</span><span class="access-tag">View AP</span></td>
+        <td><span class="access-tag">Full Edit</span><span class="access-tag">GRN</span><span class="access-tag">Dispatch</span></td>
+        <td><span class="access-tag">View Only</span></td>
+        <td>Stock Dashboard — Levels &amp; Alerts</td>
+      </tr>
+      <tr>
+        <td><span class="role-badge" style="background:var(--inventory-light);color:var(--inventory);">Warehouse Staff</span></td>
+        <td>—</td>
+        <td><span class="access-tag">GRN Entry</span><span class="access-tag">Stock Transfer</span></td>
+        <td>—</td>
+        <td>Task-based View</td>
+      </tr>
+      <tr>
+        <td><span class="role-badge" style="background:var(--people-light);color:var(--people);">HR Manager</span></td>
+        <td><span class="access-tag">View Payroll</span></td>
+        <td>—</td>
+        <td><span class="access-tag">Full Edit</span><span class="access-tag">Run Payroll</span><span class="access-tag">Compliance</span></td>
+        <td>HR Dashboard — Attendance &amp; Headcount</td>
+      </tr>
+      <tr>
+        <td><span class="role-badge" style="background:var(--people-light);color:var(--people);">Field Supervisor</span></td>
+        <td>—</td>
+        <td><span class="access-tag">Collection Entry</span><span class="access-tag">Mobile GRN</span></td>
+        <td><span class="access-tag">Mark Attendance</span><span class="access-tag">Submit Expense</span></td>
+        <td>Mobile App View</td>
+      </tr>
+      <tr>
+        <td><span class="role-badge" style="background:#f5f5f5;color:#555;">Program Coordinator</span></td>
+        <td><span class="access-tag">Submit Expense</span></td>
+        <td><span class="access-tag">View Stock</span></td>
+        <td><span class="access-tag">Beneficiary Register</span><span class="access-tag">Attendance</span></td>
+        <td>Program Progress View</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     6. CROSS-MODULE INTEGRATION
+════════════════════════════════════════════════════════════ -->
+<div class="page-title" style="margin-top:60px;">06 — Cross-Module Integration</div>
+
+<div class="section-header">
+  <div class="icon" style="background:#e8f5e9;">🔗</div>
+  <div><h2>How the Modules Talk to Each Other</h2>
+       <p>No silos — every action in one module automatically updates the others</p></div>
+</div>
+
+<div class="grid-3">
+
+  <div class="card center-m">
+    <h3>📦 + 💰 Inventory ↔ Finance</h3>
+    <ul class="feat-list">
+      <li><span class="check check-c">→</span><span>Goods Receipt Note (GRN) <strong>auto-creates Vendor Bill</strong> in Finance</span></li>
+      <li><span class="check check-c">→</span><span>Sales Order Dispatch <strong>auto-raises Sales Invoice</strong> in Books</span></li>
+      <li><span class="check check-c">→</span><span>Approved PO <strong>creates Budget Commitment</strong> — no over-spending</span></li>
+      <li><span class="check check-c">→</span><span>Stock Valuation <strong>feeds Balance Sheet</strong> (inventory asset value)</span></li>
+    </ul>
+  </div>
+
+  <div class="card center-m">
+    <h3>👥 + 💰 Payroll ↔ Finance</h3>
+    <ul class="feat-list">
+      <li><span class="check check-c">→</span><span>Approved Payroll Run <strong>auto-posts Salary Journal Entry</strong> in Books</span></li>
+      <li><span class="check check-c">→</span><span>Bank payment instruction <strong>sent directly</strong> to bank via integration</span></li>
+      <li><span class="check check-c">→</span><span>PF/ESI/TDS deductions <strong>auto-create statutory liability entries</strong></span></li>
+      <li><span class="check check-c">→</span><span>Department-wise salary cost <strong>mapped to cost centres</strong> for program P&amp;L</span></li>
+    </ul>
+  </div>
+
+  <div class="card center-m">
+    <h3>👥 + 📦 People ↔ Inventory</h3>
+    <ul class="feat-list">
+      <li><span class="check check-c">→</span><span>Field worker attendance <strong>linked to collection entries</strong> — productivity tracking</span></li>
+      <li><span class="check check-c">→</span><span>Collector performance <strong>(MT collected)</strong> available in HR performance module</span></li>
+      <li><span class="check check-c">→</span><span>Daily-wage payroll <strong>calculated from manday attendance</strong> in inventory shifts</span></li>
+      <li><span class="check check-c">→</span><span>Skill certifications <strong>determine task assignments</strong> in processing unit</span></li>
+    </ul>
+  </div>
+
+</div>
+
+<div class="highlight" style="margin-top:24px;">
+  <strong>Example End-to-End Workflow: Bio-Resource Collection Cycle</strong>
+  A field supervisor logs <b>500 kg bamboo collected</b> via mobile app (Inventory module) → System raises <b>Purchase Order</b> for farmer payment → Finance creates <b>Vendor Bill</b> → HR marks field worker <b>attendance &amp; mandays</b> → Payroll <b>calculates daily wage</b> → Bank payment released → Management sees <b>collection volume vs. cost</b> on the unified dashboard. All automatically. Zero paper.
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     7. IMPLEMENTATION ROADMAP
+════════════════════════════════════════════════════════════ -->
+<div class="page-title" style="margin-top:60px;">07 — Implementation Roadmap</div>
+
+<div class="section-header">
+  <div class="icon" style="background:#e8f5e9;">🚀</div>
+  <div><h2>Phased Implementation Plan</h2>
+       <p>Go-live in phases — minimum disruption, maximum adoption</p></div>
+</div>
+
+<div class="grid-3">
+  <div class="card" style="border-top: 4px solid var(--accent);">
+    <h3>📅 Phase 1 — Foundation<span class="badge" style="background:#fff9e6;color:var(--accent-dark);margin-left:8px;">Month 1–2</span></h3>
+    <ul class="feat-list" style="margin-top:12px;">
+      <li><span class="check" style="background:#fff9e6;color:var(--accent-dark);">✓</span><span>Zoho One account setup &amp; configuration</span></li>
+      <li><span class="check" style="background:#fff9e6;color:var(--accent-dark);">✓</span><span>Chart of accounts, cost centres setup</span></li>
+      <li><span class="check" style="background:#fff9e6;color:var(--accent-dark);">✓</span><span>Employee master data migration</span></li>
+      <li><span class="check" style="background:#fff9e6;color:var(--accent-dark);">✓</span><span>User roles &amp; access control configuration</span></li>
+      <li><span class="check" style="background:#fff9e6;color:var(--accent-dark);">✓</span><span>Basic Finance (Books) go-live</span></li>
+    </ul>
+  </div>
+
+  <div class="card" style="border-top: 4px solid #0288D1;">
+    <h3>📅 Phase 2 — Core Modules<span class="badge" style="background:#E1F5FE;color:#01579B;margin-left:8px;">Month 3–4</span></h3>
+    <ul class="feat-list" style="margin-top:12px;">
+      <li><span class="check" style="background:#E1F5FE;color:#01579B;">✓</span><span>Zoho Inventory setup with item masters</span></li>
+      <li><span class="check" style="background:#E1F5FE;color:#01579B;">✓</span><span>Zoho People &amp; Payroll go-live</span></li>
+      <li><span class="check" style="background:#E1F5FE;color:#01579B;">✓</span><span>Inventory ↔ Finance integration live</span></li>
+      <li><span class="check" style="background:#E1F5FE;color:#01579B;">✓</span><span>Payroll ↔ Finance integration live</span></li>
+      <li><span class="check" style="background:#E1F5FE;color:#01579B;">✓</span><span>Staff training (all user roles)</span></li>
+    </ul>
+  </div>
+
+  <div class="card" style="border-top: 4px solid var(--primary);">
+    <h3>📅 Phase 3 — Advanced &amp; Analytics<span class="badge badge-center" style="margin-left:8px;">Month 5–6</span></h3>
+    <ul class="feat-list" style="margin-top:12px;">
+      <li><span class="check check-c">✓</span><span>Zoho Analytics dashboards for management</span></li>
+      <li><span class="check check-c">✓</span><span>Mobile app rollout for field staff</span></li>
+      <li><span class="check check-c">✓</span><span>GST filing &amp; statutory compliance live</span></li>
+      <li><span class="check check-c">✓</span><span>Donor/grant fund reporting configured</span></li>
+      <li><span class="check check-c">✓</span><span>Hypercare support &amp; optimisation</span></li>
+    </ul>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     8. WHY ZOHO FOR UNATI
+════════════════════════════════════════════════════════════ -->
+<div class="page-title" style="margin-top:60px;">08 — Why Zoho</div>
+
+<div class="section-header">
+  <div class="icon" style="background:#e8f5e9;">⭐</div>
+  <div><h2>Why Zoho is the Right Fit for Unati</h2>
+       <p>Purpose-built advantages for Indian cooperatives &amp; social enterprises</p></div>
+</div>
+
+<div class="grid-4">
+  <div class="card">
+    <div style="font-size:28px;margin-bottom:10px;">🇮🇳</div>
+    <h3 style="font-size:15px;">Made for India</h3>
+    <p style="font-size:13px;color:var(--muted);">GST, TDS, PF, ESI, labour law — all built-in. No customisation needed for Indian compliance.</p>
+  </div>
+  <div class="card">
+    <div style="font-size:28px;margin-bottom:10px;">💸</div>
+    <h3 style="font-size:15px;">Cost Effective</h3>
+    <p style="font-size:13px;color:var(--muted);">Zoho One bundles 40+ apps at a fraction of SAP/Oracle cost — ideal for cooperative/NGO budgets.</p>
+  </div>
+  <div class="card">
+    <div style="font-size:28px;margin-bottom:10px;">📱</div>
+    <h3 style="font-size:15px;">Mobile-First</h3>
+    <p style="font-size:13px;color:var(--muted);">Field-ready apps for Android/iOS — critical for Unati's distributed field operations in Punjab.</p>
+  </div>
+  <div class="card">
+    <div style="font-size:28px;margin-bottom:10px;">🔌</div>
+    <h3 style="font-size:15px;">Seamless Integration</h3>
+    <p style="font-size:13px;color:var(--muted);">Finance, Inventory, HR — natively integrated with no 3rd-party middleware or custom APIs needed.</p>
+  </div>
+  <div class="card">
+    <div style="font-size:28px;margin-bottom:10px;">📊</div>
+    <h3 style="font-size:15px;">Powerful Reporting</h3>
+    <p style="font-size:13px;color:var(--muted);">Zoho Analytics gives management real-time cross-module insights — for internal decisions &amp; donor reports.</p>
+  </div>
+  <div class="card">
+    <div style="font-size:28px;margin-bottom:10px;">🔒</div>
+    <h3 style="font-size:15px;">Secure &amp; Scalable</h3>
+    <p style="font-size:13px;color:var(--muted);">ISO 27001 certified, role-based access, audit trails — ready to scale as Unati expands across states.</p>
+  </div>
+  <div class="card">
+    <div style="font-size:28px;margin-bottom:10px;">🤝</div>
+    <h3 style="font-size:15px;">Cooperative-Ready</h3>
+    <p style="font-size:13px;color:var(--muted);">Multi-entity, multi-location books. Ideal for Unati's partnerships with NCEL, NCOL &amp; BBSSL.</p>
+  </div>
+  <div class="card">
+    <div style="font-size:28px;margin-bottom:10px;">⚡</div>
+    <h3 style="font-size:15px;">Fast Go-Live</h3>
+    <p style="font-size:13px;color:var(--muted);">Cloud-based, no infrastructure setup. Phased go-live achievable within 60 days for core modules.</p>
+  </div>
+</div>
+
+</div><!-- /wrapper -->
+
+<div class="footer">
+  <strong>Unati Cooperative Society — Zoho ERP Workflow Architecture</strong><br>
+  Prepared for client presentation &nbsp;|&nbsp; Confidential &nbsp;|&nbsp; March 2026<br>
+  <span style="opacity:0.5;font-size:11px;margin-top:6px;display:block;">Finance · Inventory · People &amp; Payroll · Centralised · Mobile-Ready · India-Compliant</span>
+</div>
+
+</body>
+</html>
