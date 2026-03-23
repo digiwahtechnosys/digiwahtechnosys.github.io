@@ -337,15 +337,34 @@
     .zoho-suggest-icon { width: 40px; height: 40px; background: #F0FDF4; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
     .zoho-suggest-header h4 { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
     .zoho-suggest-header p { font-size: 12px; color: var(--slate-light); }
-    .zoho-license-list { display: flex; flex-direction: column; gap: 10px; }
-    .zoho-license-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px; background: var(--bg); border-radius: 10px; border: 1px solid var(--border); }
+    .zoho-license-list { display: flex; flex-direction: column; gap: 16px; }
+    .zoho-license-item { display: flex; align-items: flex-start; gap: 12px; padding: 16px 20px; background: var(--bg); border-radius: 10px; border: 1px solid var(--border); }
     .zl-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+    .zl-body { flex: 1; }
     .zl-body h5 { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
     .zl-body p { font-size: 12px; color: var(--slate-mid); }
     .zl-badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 9px; border-radius: 6px; margin-top: 5px; background: var(--orange-light); color: #C2410C; }
     .zl-badge.blue { background: var(--blue-light); color: #1D4ED8; }
     .zl-badge.purple { background: var(--purple-light); color: #5B21B6; }
     .zl-badge.green { background: var(--green-light); color: #15803D; }
+    .zl-user-table { margin-top: 12px; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; font-size: 11.5px; }
+    .zl-user-row { display: grid; grid-template-columns: 1fr 1.2fr 1.5fr 2fr; gap: 0; }
+    .zl-user-row.header { background: var(--slate); color: white; font-weight: 600; }
+    .zl-user-row.header .zl-cell { color: white; }
+    .zl-user-row:not(.header):nth-child(even) { background: #FAFAFA; }
+    .zl-cell { padding: 7px 10px; border-right: 1px solid var(--border); }
+    .zl-cell:last-child { border-right: none; }
+    .zl-optional-row { background: #FFFBEB !important; }
+    .zl-optional-tag { font-size: 10px; font-weight: 600; color: #92400E; background: #FEF3C7; border-radius: 4px; padding: 1px 5px; margin-left: 4px; }
+    .zl-pricing-row { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+    .zl-price-pill { background: white; border: 1px solid var(--border); border-radius: 8px; padding: 8px 14px; font-size: 12px; flex: 1; min-width: 140px; }
+    .zl-price-pill .zl-pp-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--slate-light); margin-bottom: 3px; }
+    .zl-price-pill .zl-pp-amount { font-size: 15px; font-weight: 700; color: var(--slate); }
+    .zl-price-pill .zl-pp-sub { font-size: 10px; color: var(--slate-light); margin-top: 1px; }
+    .zl-price-pill.highlight { background: var(--green-light); border-color: #BBF7D0; }
+    .zl-price-pill.highlight .zl-pp-amount { color: var(--green); }
+    .zl-disclaimer { margin-top: 20px; padding: 14px 18px; background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 10px; font-size: 12px; color: #1E40AF; line-height: 1.6; }
+    .zl-disclaimer a { color: #1D4ED8; font-weight: 600; }
     .wa-cost-box { background: linear-gradient(135deg, #F0FDF4, #DCFCE7); border: 1px solid #BBF7D0; border-radius: 14px; padding: 24px 28px; margin-top: 24px; display: flex; align-items: flex-start; gap: 16px; }
     .wa-cost-icon { width: 48px; height: 48px; background: #25D366; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
     .wa-cost-body h4 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
@@ -1404,47 +1423,252 @@
       <div class="zoho-suggest-header">
         <div class="zoho-suggest-icon">&#x1F3D7;&#xFE0F;</div>
         <div>
-          <h4>Zoho Subscriptions — What You'll Need</h4>
-          <p>Purchased directly from Zoho. We'll advise on the right plan and license count for your team before you commit.</p>
+          <h4>Zoho Subscriptions — Suggested Licensing</h4>
+          <p>Purchased directly from Zoho. Based on your team roles and each app's scope, here is our suggested breakdown. You can adjust up or down depending on how actively each person uses the system.</p>
         </div>
       </div>
+
       <div class="zoho-license-list">
-        <div class="zoho-license-item">
-          <div class="zl-icon">&#x1F91D;</div>
-          <div class="zl-body">
-            <h5>Zoho CRM — Professional Plan</h5>
-            <p>For admin and sales staff across all three businesses — lead management, pipeline, quotations, and reporting. Covers Business 1, 2, and 3.</p>
-            <span class="zl-badge">All 3 Businesses</span>
-          </div>
-        </div>
-        <div class="zoho-license-item">
-          <div class="zl-icon">&#x270D;&#xFE0F;</div>
-          <div class="zl-body">
-            <h5>Zoho Sign</h5>
-            <p>For digital quotation sign-off in Business 1. Available as pay-per-use or a subscription plan. We'll help you choose based on your monthly quotation volume.</p>
-            <span class="zl-badge purple">Business 1 — Quotations</span>
-          </div>
-        </div>
+
+        <!-- Creator Professional -->
         <div class="zoho-license-item">
           <div class="zl-icon">&#x26A1;</div>
           <div class="zl-body">
             <h5>Zoho Creator — Professional Plan</h5>
-            <p>For internal admin and office staff who manage jobs and deliveries. Covers Business 1 (job management) and Business 2 (delivery management).</p>
+            <p>For internal staff actively managing jobs (OAS) and deliveries (Climat). Professional is required as we are building multiple apps under one account.</p>
             <span class="zl-badge blue">Business 1 &amp; 2</span>
+
+            <div class="zl-user-table" style="margin-top:12px;">
+              <div class="zl-user-row header">
+                <div class="zl-cell">Name</div>
+                <div class="zl-cell">Business</div>
+                <div class="zl-cell">Role</div>
+                <div class="zl-cell">Why they need access</div>
+              </div>
+              <div class="zl-user-row">
+                <div class="zl-cell"><strong>Ashlee</strong></div>
+                <div class="zl-cell">OAS Energy</div>
+                <div class="zl-cell">Operations Manager</div>
+                <div class="zl-cell">Creates &amp; manages jobs, assigns contractors, full dashboard access</div>
+              </div>
+              <div class="zl-user-row">
+                <div class="zl-cell"><strong>Christine</strong></div>
+                <div class="zl-cell">OAS Energy</div>
+                <div class="zl-cell">Operations Manager</div>
+                <div class="zl-cell">Same as Ashlee — dual operations management</div>
+              </div>
+              <div class="zl-user-row">
+                <div class="zl-cell"><strong>Jen</strong></div>
+                <div class="zl-cell">OAS + Climat</div>
+                <div class="zl-cell">HVAC Ops / Office Admin</div>
+                <div class="zl-cell">Manages HVAC jobs (OAS) and delivery assignments (Climat) — 1 shared licence</div>
+              </div>
+              <div class="zl-user-row">
+                <div class="zl-cell"><strong>Jane</strong></div>
+                <div class="zl-cell">OAS Energy</div>
+                <div class="zl-cell">Technical Administrator</div>
+                <div class="zl-cell">System and data management across the job board</div>
+              </div>
+              <div class="zl-user-row">
+                <div class="zl-cell"><strong>Josh</strong></div>
+                <div class="zl-cell">Climat</div>
+                <div class="zl-cell">Warehouse Manager</div>
+                <div class="zl-cell">Manages dispatch board, assigns drivers, oversees delivery ops</div>
+              </div>
+              <div class="zl-user-row">
+                <div class="zl-cell"><strong>Beau</strong></div>
+                <div class="zl-cell">Climat</div>
+                <div class="zl-cell">Logistics Coordinator</div>
+                <div class="zl-cell">Core drag-and-drop dispatch, driver scheduling, real-time tracking</div>
+              </div>
+              <div class="zl-user-row" style="background:#F0FDF4;">
+                <div class="zl-cell"><strong>Rob</strong></div>
+                <div class="zl-cell">All Businesses</div>
+                <div class="zl-cell">Owner</div>
+                <div class="zl-cell">Full visibility across all apps — mandatory</div>
+              </div>
+              <div class="zl-user-row" style="background:#F0FDF4;">
+                <div class="zl-cell"><strong>Alory</strong></div>
+                <div class="zl-cell">All Businesses</div>
+                <div class="zl-cell">Owner</div>
+                <div class="zl-cell">Full visibility across all apps — mandatory</div>
+              </div>
+            </div>
+
+            <div style="margin-top:10px; padding:10px 14px; background:#F8FAFC; border:1px solid var(--border); border-radius:8px; font-size:11.5px; color:var(--slate-mid);">
+              <strong style="color:var(--slate);">Not included in Zoho Creator:</strong> Steve (Procurement / Warehouse Op), Louis (Sales Manager), Leonora (Accounts Administrator), Sheeja (Compliance Officer)
+              <div style="margin-top:6px; color:var(--slate-light);">The above users have been excluded based on our assessment of their day-to-day involvement with the apps. If you feel any of them require full Creator access, simply add them to the licence count.</div>
+            </div>
+
+            <div class="zl-pricing-row">
+              <div class="zl-price-pill highlight">
+                <div class="zl-pp-label">Annual Billing (Save ~33%)</div>
+                <div class="zl-pp-amount">~AUD $3,072</div>
+                <div class="zl-pp-sub">8 users — billed annually</div>
+              </div>
+              <div class="zl-price-pill">
+                <div class="zl-pp-label">Monthly Billing</div>
+                <div class="zl-pp-amount">~AUD $47 <span style="font-size:11px;font-weight:400">/user/month</span></div>
+                <div class="zl-pp-sub">8 users ≈ AUD $376/month</div>
+              </div>
+            </div>
           </div>
         </div>
+
+        <!-- Creator Portal -->
         <div class="zoho-license-item">
           <div class="zl-icon">&#x1F510;</div>
           <div class="zl-body">
-            <h5>Zoho Creator — Portal Users</h5>
-            <p>For external contractors (Business 1) and drivers (Business 2) who access via mobile browser. Zoho offers bundled portal plans ideal for field teams.</p>
-            <span class="zl-badge">Contractors &amp; Drivers</span>
+            <h5>Zoho Creator — Portal Users Bundle</h5>
+            <p>For external users who access only their assigned jobs via mobile browser. No app download required. Approximately 15 portal users across both businesses — covered by the 25-user bundle.</p>
+            <span class="zl-badge">Business 1 &amp; 2 — External Access</span>
+
+            <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
+              <div style="flex:1; min-width:180px; padding:10px 14px; background:#FFF7ED; border:1px solid #FED7AA; border-radius:8px; font-size:11.5px;">
+                <div style="font-weight:700; color:#C2410C; margin-bottom:3px;">Business 1 — OAS Energy (Job Portal)</div>
+                <div style="color:var(--slate-mid);">Contractors who receive and complete HVAC installation jobs. They log in via mobile browser to accept jobs, upload photos, and submit proof of completion.</div>
+              </div>
+              <div style="flex:1; min-width:180px; padding:10px 14px; background:#EFF6FF; border:1px solid #BFDBFE; border-radius:8px; font-size:11.5px;">
+                <div style="font-weight:700; color:#1D4ED8; margin-bottom:3px;">Business 2 — Climat (Delivery Portal)</div>
+                <div style="color:var(--slate-mid);">Drivers who are assigned delivery runs by the dispatcher. They access their run sheet, update delivery status, and capture proof of delivery via mobile browser.</div>
+              </div>
+            </div>
+
+            <div class="zl-pricing-row" style="margin-top:12px;">
+              <div class="zl-price-pill highlight">
+                <div class="zl-pp-label">Annual Billing (Save ~29%)</div>
+                <div class="zl-pp-amount">~AUD $190</div>
+                <div class="zl-pp-sub">Up to 25 portal users — covers ~15 contractors + drivers combined</div>
+              </div>
+              <div class="zl-price-pill">
+                <div class="zl-pp-label">Monthly Billing</div>
+                <div class="zl-pp-amount">~AUD $22 <span style="font-size:11px;font-weight:400">/month</span></div>
+                <div class="zl-pp-sub">Up to 25 portal users (contractors + drivers combined)</div>
+              </div>
+            </div>
           </div>
         </div>
+
+        <!-- CRM Professional -->
+        <div class="zoho-license-item">
+          <div class="zl-icon">&#x1F91D;</div>
+          <div class="zl-body">
+            <h5>Zoho CRM — Professional Plan</h5>
+            <p>Required across all three businesses. Professional plan is needed for third-party integrations — including Unleashed, Xero, social media lead ads, and Zoho Sign. One licence per user — client can advise if any user does not require access.</p>
+            <span class="zl-badge green">All 3 Businesses</span>
+
+            <div class="zl-user-table" style="margin-top:12px;">
+              <div class="zl-user-row header">
+                <div class="zl-cell">Name</div>
+                <div class="zl-cell">Business</div>
+                <div class="zl-cell">Role</div>
+                <div class="zl-cell">CRM Access</div>
+              </div>
+              <div class="zl-user-row" style="background:#F0FDF4;">
+                <div class="zl-cell"><strong>Rob</strong></div>
+                <div class="zl-cell">All Businesses</div>
+                <div class="zl-cell">Owner</div>
+                <div class="zl-cell">Full CRM visibility across all 3 businesses — mandatory</div>
+              </div>
+              <div class="zl-user-row" style="background:#F0FDF4;">
+                <div class="zl-cell"><strong>Alory</strong></div>
+                <div class="zl-cell">All Businesses</div>
+                <div class="zl-cell">Owner</div>
+                <div class="zl-cell">Full CRM visibility across all 3 businesses — mandatory</div>
+              </div>
+              <div class="zl-user-row">
+                <div class="zl-cell"><strong>Ashlee</strong></div>
+                <div class="zl-cell">OAS + ETG</div>
+                <div class="zl-cell">Operations / Student Services</div>
+                <div class="zl-cell">Sales pipeline, job tracking, ETG student enrolment</div>
+              </div>
+              <div class="zl-user-row">
+                <div class="zl-cell"><strong>Christine</strong></div>
+                <div class="zl-cell">OAS Energy</div>
+                <div class="zl-cell">Operations Manager</div>
+                <div class="zl-cell">Quotations, pipeline management, job tracking</div>
+              </div>
+              <div class="zl-user-row">
+                <div class="zl-cell"><strong>Jen</strong></div>
+                <div class="zl-cell">OAS + Climat</div>
+                <div class="zl-cell">HVAC Ops / Office Admin</div>
+                <div class="zl-cell">Cross-business CRM access — 1 licence</div>
+              </div>
+              <div class="zl-user-row">
+                <div class="zl-cell"><strong>Jane</strong></div>
+                <div class="zl-cell">OAS Energy</div>
+                <div class="zl-cell">Technical Administrator</div>
+                <div class="zl-cell">CRM data and system management</div>
+              </div>
+              <div class="zl-user-row">
+                <div class="zl-cell"><strong>Louis</strong></div>
+                <div class="zl-cell">Climat</div>
+                <div class="zl-cell">Sales Manager</div>
+                <div class="zl-cell">Quotations, customer accounts, sales pipeline</div>
+              </div>
+              <div class="zl-user-row">
+                <div class="zl-cell"><strong>Josh</strong></div>
+                <div class="zl-cell">Climat</div>
+                <div class="zl-cell">Warehouse Manager</div>
+                <div class="zl-cell">Order visibility and delivery status</div>
+              </div>
+              <div class="zl-user-row">
+                <div class="zl-cell"><strong>Beau</strong></div>
+                <div class="zl-cell">Climat</div>
+                <div class="zl-cell">Logistics Coordinator</div>
+                <div class="zl-cell">Delivery coordination linked to CRM records</div>
+              </div>
+              <div class="zl-user-row">
+                <div class="zl-cell"><strong>Samantha</strong></div>
+                <div class="zl-cell">ETG Training</div>
+                <div class="zl-cell">Student Services Admin</div>
+                <div class="zl-cell">Student pipeline, enrolment management</div>
+              </div>
+            </div>
+
+            <div class="zl-pricing-row">
+              <div class="zl-price-pill highlight">
+                <div class="zl-pp-label">Annual Billing (Save ~35%)</div>
+                <div class="zl-pp-amount">~AUD $4,320</div>
+                <div class="zl-pp-sub">10 licences — billed annually</div>
+              </div>
+              <div class="zl-price-pill">
+                <div class="zl-pp-label">Monthly Billing</div>
+                <div class="zl-pp-amount">~AUD $55 <span style="font-size:11px;font-weight:400">/user/month</span></div>
+                <div class="zl-pp-sub">10 licences ≈ AUD $550/month</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Zoho Sign -->
+        <div class="zoho-license-item">
+          <div class="zl-icon">&#x270D;&#xFE0F;</div>
+          <div class="zl-body">
+            <h5>Zoho Sign</h5>
+            <p>For digital quotation sign-off in Business 1. Available as pay-per-use or a monthly plan. We'll advise the right option based on your monthly quotation volume.</p>
+            <span class="zl-badge purple">Business 1 — Quotations</span>
+          </div>
+        </div>
+
       </div>
-      <div style="margin-top:16px; padding:12px 16px; background:var(--orange-light); border-radius:10px; font-size:13px; color:#9A3412; border: 1px solid #FED7AA;">
-        &#x1F4A1; <strong>Our recommendation:</strong> We'll advise on the exact number of licenses needed for each product based on your team headcount before you commit to any Zoho subscription.
+
+      <!-- Estimated total -->
+      <div style="margin-top:20px; padding:16px 20px; background: var(--green-light); border:1px solid #BBF7D0; border-radius:12px;">
+        <div style="font-size:13px; font-weight:700; color:var(--green); margin-bottom:8px;">&#x1F4CA; Estimated Annual Total (Suggested Users — Annual Billing)</div>
+        <div style="display:flex; gap:24px; flex-wrap:wrap; font-size:13px; color:var(--slate-mid);">
+          <div>&#x2713; Creator Professional (8 users incl. Rob &amp; Alory): <strong style="color:var(--slate)">~AUD $3,072/year</strong></div>
+          <div>&#x2713; Creator Portal Bundle (up to 25 users — contractors + drivers): <strong style="color:var(--slate)">~AUD $190/year</strong></div>
+          <div>&#x2713; Zoho CRM Professional (10 licences — all 3 businesses): <strong style="color:var(--slate)">~AUD $4,320/year</strong></div>
+        </div>
+        <div style="margin-top:10px; padding-top:10px; border-top:1px solid #BBF7D0; font-size:14px; font-weight:700; color:var(--green);">Total Estimated: ~AUD $7,582/year <span style="font-weight:400; font-size:12px; color:var(--slate-mid)">— excl. Zoho Sign &amp; WhatsApp</span></div>
       </div>
+
+      <!-- Disclaimer -->
+      <div class="zl-disclaimer">
+        &#x2139;&#xFE0F; <strong>Please note:</strong> All prices above are estimates based on publicly listed USD pricing converted to AUD (~1.57 rate) and may not reflect Zoho's actual AUD pricing for Australia. Prices may vary by region, billing cycle, and any promotions active at time of purchase. <strong>We strongly recommend visiting <a href="https://www.zoho.com/creator/pricing.html" target="_blank">zoho.com/creator/pricing.html</a> and <a href="https://www.zoho.com/crm/zohocrm-pricing.html" target="_blank">zoho.com/crm/zohocrm-pricing.html</a> and selecting Australia as your region to confirm actual current AUD pricing before committing to any subscription.</strong>
+      </div>
+
     </div>
 
   </div>
