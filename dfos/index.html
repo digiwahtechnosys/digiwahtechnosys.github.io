@@ -1,1 +1,1579 @@
-Dfos
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zoho CRM Revamp — Solution Architecture Proposal</title>
+  <style>
+    :root {
+      --primary:   #1a3c5e;
+      --accent:    #e8672a;
+      --accent2:   #2e86de;
+      --green:     #27ae60;
+      --yellow:    #f39c12;
+      --red:       #e74c3c;
+      --light-bg:  #f5f7fa;
+      --card-bg:   #ffffff;
+      --border:    #dce3ed;
+      --text:      #2c3e50;
+      --muted:     #6b7c93;
+      --section-gap: 56px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--light-bg);
+      color: var(--text);
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    /* ── COVER PAGE ─────────────────────────────────────── */
+    .cover {
+      background: linear-gradient(135deg, #0f2640 0%, #1a3c5e 55%, #1b5e8f 100%);
+      color: #fff;
+      padding: 80px 60px 60px;
+      position: relative;
+      overflow: hidden;
+      page-break-after: always;
+    }
+    .cover::before {
+      content: '';
+      position: absolute;
+      top: -80px; right: -80px;
+      width: 420px; height: 420px;
+      border-radius: 50%;
+      background: rgba(232,103,42,0.12);
+    }
+    .cover::after {
+      content: '';
+      position: absolute;
+      bottom: -60px; left: 30%;
+      width: 280px; height: 280px;
+      border-radius: 50%;
+      background: rgba(46,134,222,0.10);
+    }
+    .cover-label {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 3px;
+      margin-bottom: 28px;
+    }
+    .cover h1 {
+      font-size: 42px;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 10px;
+      max-width: 680px;
+    }
+    .cover h1 span { color: var(--accent); }
+    .cover .subtitle {
+      font-size: 17px;
+      color: rgba(255,255,255,0.72);
+      margin-bottom: 48px;
+      max-width: 560px;
+    }
+    .cover-meta {
+      display: flex;
+      gap: 40px;
+      flex-wrap: wrap;
+      border-top: 1px solid rgba(255,255,255,0.18);
+      padding-top: 28px;
+      margin-top: 40px;
+    }
+    .cover-meta-item label {
+      display: block;
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 4px;
+    }
+    .cover-meta-item span {
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+    }
+    .cover-systems {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 36px;
+    }
+    .sys-pill {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 20px;
+      padding: 6px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.9);
+    }
+
+    /* ── LAYOUT ─────────────────────────────────────────── */
+    .page-wrap {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 32px 80px;
+    }
+
+    /* ── SECTION HEADER ─────────────────────────────────── */
+    .section {
+      margin-top: var(--section-gap);
+    }
+    .section-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+    .section-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--primary);
+      border-bottom: 3px solid var(--accent);
+      display: inline-block;
+      padding-bottom: 4px;
+      margin-bottom: 24px;
+    }
+
+    /* ── CARDS ──────────────────────────────────────────── */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 24px 28px;
+      margin-bottom: 16px;
+    }
+    .card h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+    .card p, .card li {
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .card ul { padding-left: 18px; }
+    .card ul li { margin-bottom: 4px; }
+
+    /* ── GRID ───────────────────────────────────────────── */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+    /* ── STATUS BADGES ──────────────────────────────────── */
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 10px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+    .badge-native  { background: #e8f8ef; color: #27ae60; border: 1px solid #a8dfc0; }
+    .badge-custom  { background: #fff3e0; color: #d97706; border: 1px solid #fcd38d; }
+    .badge-ext     { background: #fdecea; color: #c0392b; border: 1px solid #f5b7b1; }
+    .badge-addon   { background: #eaf0fb; color: #2e86de; border: 1px solid #a5c4f3; }
+
+    /* ── FEASIBILITY TABLE ──────────────────────────────── */
+    .feasibility-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+      background: var(--card-bg);
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+    .feasibility-table thead tr {
+      background: var(--primary);
+      color: #fff;
+    }
+    .feasibility-table th {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+    }
+    .feasibility-table td {
+      padding: 11px 16px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    .feasibility-table tbody tr:last-child td { border-bottom: none; }
+    .feasibility-table tbody tr:hover { background: #f9fbff; }
+    .feasibility-table td:first-child { font-weight: 500; color: var(--text); }
+    .feasibility-table td:nth-child(3) { color: var(--muted); font-size: 13px; }
+
+    /* ── ARCHITECTURE DIAGRAM ───────────────────────────── */
+    .arch-diagram {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 36px 28px;
+      text-align: center;
+    }
+    .arch-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .arch-box {
+      background: var(--primary);
+      color: #fff;
+      border-radius: 8px;
+      padding: 12px 20px;
+      font-size: 13px;
+      font-weight: 600;
+      min-width: 130px;
+      text-align: center;
+    }
+    .arch-box.accent { background: var(--accent); }
+    .arch-box.blue   { background: var(--accent2); }
+    .arch-box.green  { background: var(--green); }
+    .arch-box.light  { background: #eaf0fb; color: var(--primary); border: 1px solid var(--border); }
+    .arch-box sub { display: block; font-size: 10px; font-weight: 400; opacity: 0.8; margin-top: 2px; }
+    .arch-connector {
+      font-size: 22px;
+      color: var(--border);
+      font-weight: 300;
+    }
+    .arch-arrow {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+    .arch-line {
+      width: 2px;
+      height: 32px;
+      background: var(--border);
+      margin: 0 auto;
+    }
+    .arch-arrow-icon { color: var(--border); font-size: 18px; }
+
+    /* ── CALLOUT ────────────────────────────────────────── */
+    .callout {
+      border-radius: 8px;
+      padding: 18px 22px;
+      margin-bottom: 16px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+    .callout-warning { background: #fff8ee; border-left: 4px solid var(--yellow); }
+    .callout-danger  { background: #fef5f5; border-left: 4px solid var(--red); }
+    .callout-info    { background: #eaf4ff; border-left: 4px solid var(--accent2); }
+    .callout-success { background: #edfaf2; border-left: 4px solid var(--green); }
+    .callout-icon { font-size: 20px; line-height: 1; }
+    .callout-body strong { font-size: 14px; color: var(--text); display: block; margin-bottom: 4px; }
+    .callout-body p { font-size: 13.5px; color: var(--muted); }
+
+    /* ── PHASE TIMELINE ─────────────────────────────────── */
+    .phases { display: flex; flex-direction: column; gap: 0; }
+    .phase-item {
+      display: flex;
+      gap: 0;
+    }
+    .phase-left {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 44px;
+      flex-shrink: 0;
+    }
+    .phase-dot {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      flex-shrink: 0;
+      z-index: 1;
+    }
+    .phase-dot.accent { background: var(--accent); }
+    .phase-dot.blue   { background: var(--accent2); }
+    .phase-dot.green  { background: var(--green); }
+    .phase-line {
+      width: 2px;
+      flex: 1;
+      background: var(--border);
+      margin: 4px 0;
+    }
+    .phase-body {
+      padding: 0 0 32px 18px;
+      flex: 1;
+    }
+    .phase-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 4px;
+    }
+    .phase-duration {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      background: var(--light-bg);
+      border: 1px solid var(--border);
+      padding: 1px 8px;
+      border-radius: 10px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .phase-body ul {
+      padding-left: 18px;
+    }
+    .phase-body ul li {
+      font-size: 13.5px;
+      color: var(--muted);
+      margin-bottom: 3px;
+    }
+
+    /* ── LIMITATION BLOCK ───────────────────────────────── */
+    .limit-block {
+      background: #fef5f5;
+      border: 1px solid #f5c6c6;
+      border-radius: 10px;
+      padding: 24px 28px;
+      margin-bottom: 16px;
+    }
+    .limit-block h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: #c0392b;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .limit-block .resolution {
+      margin-top: 14px;
+      background: #edfaf2;
+      border: 1px solid #a8dfc0;
+      border-radius: 7px;
+      padding: 14px 18px;
+    }
+    .limit-block .resolution strong {
+      font-size: 13px;
+      color: var(--green);
+      display: block;
+      margin-bottom: 4px;
+    }
+    .limit-block .resolution p {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    /* ── SUMMARY TABLE ──────────────────────────────────── */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-top: 4px;
+    }
+    .summary-stat {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px 18px;
+      text-align: center;
+    }
+    .summary-stat .num {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--primary);
+      display: block;
+    }
+    .summary-stat .num.green { color: var(--green); }
+    .summary-stat .num.yellow { color: var(--yellow); }
+    .summary-stat .num.red { color: var(--red); }
+    .summary-stat .num.blue { color: var(--accent2); }
+    .summary-stat label { font-size: 12px; color: var(--muted); margin-top: 4px; display: block; }
+
+    /* ── FOOTER ─────────────────────────────────────────── */
+    .doc-footer {
+      margin-top: 64px;
+      padding: 28px 36px;
+      background: var(--primary);
+      color: rgba(255,255,255,0.7);
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .doc-footer strong { color: #fff; }
+
+    /* ── TOC ────────────────────────────────────────────── */
+    .toc {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 28px 32px;
+      margin-top: 36px;
+    }
+    .toc h2 { font-size: 16px; font-weight: 700; color: var(--primary); margin-bottom: 16px; }
+    .toc ol { padding-left: 20px; }
+    .toc ol li { font-size: 14px; color: var(--muted); margin-bottom: 6px; }
+    .toc ol li a { color: var(--accent2); text-decoration: none; }
+    .toc ol li a:hover { text-decoration: underline; }
+
+    /* Print */
+    @media print {
+      body { background: #fff; }
+      .cover { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════
+     COVER PAGE
+═══════════════════════════════════════════════════════ -->
+<div class="cover">
+  <div class="cover-label">Solution Architecture Proposal</div>
+  <h1>Zoho CRM + Books + Inventory<br><span>Revamp & Integration</span></h1>
+  <p class="subtitle">
+    Transforming a fragmented CRM setup into a fully governed,
+    SaaS-aligned Revenue Management Engine.
+  </p>
+
+  <div class="cover-systems">
+    <span class="sys-pill">Zoho CRM</span>
+    <span class="sys-pill">Zoho Books</span>
+    <span class="sys-pill">Zoho Inventory</span>
+    <span class="sys-pill">Zoho Partner Portal</span>
+    <span class="sys-pill">Zoho Billing (Recommended)</span>
+    <span class="sys-pill">Zoho Analytics</span>
+  </div>
+
+  <div class="cover-meta">
+    <div class="cover-meta-item">
+      <label>Prepared For</label>
+      <span>Df-OS</span>
+    </div>
+    <div class="cover-meta-item">
+      <label>Document Date</label>
+      <span>March 2026</span>
+    </div>
+    <div class="cover-meta-item">
+      <label>Document Type</label>
+      <span>Business Architecture Proposal</span>
+    </div>
+    <div class="cover-meta-item">
+      <label>Version</label>
+      <span>v1.0</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     PAGE CONTENT
+═══════════════════════════════════════════════════════ -->
+<div class="page-wrap">
+
+  <!-- TABLE OF CONTENTS -->
+  <div class="toc">
+    <h2>Table of Contents</h2>
+    <ol>
+      <li><a href="#objective">Engagement Objective</a></li>
+      <li><a href="#architecture">Proposed System Architecture</a></li>
+      <li><a href="#crm-structure">CRM Structure & Module Design</a></li>
+      <li><a href="#renewals">Renewal Management Engine</a></li>
+      <li><a href="#approvals">Approval Workflow — Deal Desk</a></li>
+      <li><a href="#governance">Account Governance & Data Control</a></li>
+      <li><a href="#integration">Zoho Books & Inventory Integration</a></li>
+      <li><a href="#limitations">Limitations & Recommended Additions</a></li>
+      <li><a href="#dashboards">Dashboards & Reporting</a></li>
+      <li><a href="#feasibility">Full Feasibility Matrix</a></li>
+      <li><a href="#phases">Implementation Roadmap — 2 Phases</a></li>
+      <li><a href="#deliverables">Deliverables</a></li>
+      <li><a href="#pricing">Investment</a></li>
+      <li><a href="#next-steps">Next Steps</a></li>
+    </ol>
+  </div>
+
+  <!-- ── 1. OBJECTIVE ───────────────────────────────────── -->
+  <div class="section" id="objective">
+    <div class="section-label">Section 01</div>
+    <div class="section-title">Engagement Objective</div>
+
+    <div class="callout callout-info">
+      <div class="callout-icon">&#9432;</div>
+      <div class="callout-body">
+        <strong>This is not a CRM cleanup. It is a full transformation.</strong>
+        <p>The goal is to evolve the existing Zoho setup from a basic deal-tracking tool into a governed, automated Revenue Management System that aligns with SaaS best practices.</p>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>Current State Problems</h3>
+        <ul>
+          <li>Duplicate work across CRM and Books</li>
+          <li>No structured SaaS lifecycle — especially renewals</li>
+          <li>Weak approval and governance controls</li>
+          <li>Renewal pipeline managed separately — fragmented view</li>
+          <li>No ownership clarity for renewals</li>
+          <li>No ARR / MRR visibility</li>
+          <li>Reporting depends entirely on manual discipline</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Target State Goals</h3>
+        <ul>
+          <li>CRM as single source of truth for all Sales motions</li>
+          <li>Unified Opportunity model: New + Renewal + Expansion</li>
+          <li>Automated renewal lifecycle with alerts and auto-creation</li>
+          <li>Multi-level deal desk approval with per-component thresholds</li>
+          <li>System-calculated revenue metrics (MRR / ARR)</li>
+          <li>Real-time dashboards — Sales, Renewal, Finance, Partner</li>
+          <li>Scalable partner ecosystem with portal access</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 2. ARCHITECTURE ────────────────────────────────── -->
+  <div class="section" id="architecture">
+    <div class="section-label">Section 02</div>
+    <div class="section-title">Proposed System Architecture</div>
+
+    <div class="arch-diagram">
+      <p style="font-size:12px;color:var(--muted);margin-bottom:28px;text-transform:uppercase;letter-spacing:1px;">End-to-End System Map</p>
+
+      <!-- Top layer: CRM as core -->
+      <div class="arch-row">
+        <div class="arch-box accent" style="min-width:260px;padding:16px 24px;">
+          ZOHO CRM — Revenue Engine Core
+          <sub>Opportunities · Renewals · Approvals · Partner Portal</sub>
+        </div>
+      </div>
+
+      <div class="arch-row" style="gap:60px;margin-top:4px;">
+        <div style="font-size:22px;color:var(--border);">&#8595;</div>
+        <div style="font-size:22px;color:var(--border);">&#8595;</div>
+        <div style="font-size:22px;color:var(--border);">&#8595;</div>
+        <div style="font-size:22px;color:var(--border);">&#8595;</div>
+      </div>
+
+      <!-- Second layer -->
+      <div class="arch-row" style="align-items:stretch;">
+        <div class="arch-box blue" style="min-width:140px;">
+          Zoho Books
+          <sub>Finance Execution</sub>
+        </div>
+        <div class="arch-box green" style="min-width:140px;">
+          Zoho Inventory
+          <sub>BOM / Stock</sub>
+        </div>
+        <div class="arch-box" style="min-width:140px;background:#8e44ad;">
+          Zoho Billing
+          <sub>Subscriptions / MRR</sub>
+        </div>
+        <div class="arch-box" style="min-width:140px;background:#16a085;">
+          Zoho Analytics
+          <sub>Dashboards / Reports</sub>
+        </div>
+      </div>
+
+      <div class="arch-row" style="margin-top:4px;gap:60px;">
+        <div style="font-size:22px;color:var(--border);">&#8595;</div>
+        <div style="font-size:22px;color:var(--border);">&#8595;</div>
+        <div style="font-size:22px;color:var(--border);">&#8595;</div>
+        <div style="font-size:22px;color:var(--border);">&#8595;</div>
+      </div>
+
+      <!-- Bottom layer: data flows -->
+      <div class="arch-row">
+        <div class="arch-box light" style="min-width:140px;font-size:12px;">
+          Quotes &rarr; Invoices
+          <sub>Synced via Native Integration</sub>
+        </div>
+        <div class="arch-box light" style="min-width:140px;font-size:12px;">
+          BOM Visibility in CRM
+          <sub>Custom Related List</sub>
+        </div>
+        <div class="arch-box light" style="min-width:140px;font-size:12px;">
+          MRR / ARR Tracking
+          <sub>Subscription Lifecycle</sub>
+        </div>
+        <div class="arch-box light" style="min-width:140px;font-size:12px;">
+          Executive Dashboards
+          <sub>Cross-system Data</sub>
+        </div>
+      </div>
+
+      <p style="margin-top:28px;font-size:12px;color:var(--muted);">
+        All systems are part of the Zoho One ecosystem and communicate natively — with Deluge custom functions bridging any gaps.
+      </p>
+    </div>
+  </div>
+
+  <!-- ── 3. CRM STRUCTURE ───────────────────────────────── -->
+  <div class="section" id="crm-structure">
+    <div class="section-label">Section 03</div>
+    <div class="section-title">CRM Structure & Module Design</div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>Opportunities Module (Renamed from Deals)</h3>
+        <p style="margin-bottom:10px;">The Deals module will be renamed to <strong>Opportunities</strong> across the entire CRM interface. A single module will handle all three sales motions:</p>
+        <ul>
+          <li><strong>New Business</strong> — fresh logo / new product sale</li>
+          <li><strong>Renewal</strong> — contract renewal, AMC, SaaS subscription</li>
+          <li><strong>Expansion</strong> — upsell or cross-sell to existing account</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>New Business Pipeline Stages</h3>
+        <ul>
+          <li>Pipeline Discussion</li>
+          <li>Scope of Work</li>
+          <li>Quotation Shared</li>
+          <li>Purchase Negotiation</li>
+          <li>Closed Won</li>
+          <li>Closed Lost</li>
+        </ul>
+        <p style="margin-top:10px;">Stages are enforced via <strong>Blueprint</strong> — mandatory fields required before each transition.</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:0;">
+      <h3>Deal Value Structure — Auto-Calculated</h3>
+      <p style="margin-bottom:12px;">The Opportunity Amount is calculated automatically from five line-item components:</p>
+      <div class="grid-3" style="gap:10px;">
+        <div style="background:var(--light-bg);border-radius:6px;padding:12px 14px;font-size:13px;">
+          <strong style="color:var(--primary);">Hardware Value</strong>
+          <p style="color:var(--muted);margin-top:2px;">Physical devices, equipment</p>
+        </div>
+        <div style="background:var(--light-bg);border-radius:6px;padding:12px 14px;font-size:13px;">
+          <strong style="color:var(--primary);">SaaS Value</strong>
+          <p style="color:var(--muted);margin-top:2px;">Software licenses, subscriptions</p>
+        </div>
+        <div style="background:var(--light-bg);border-radius:6px;padding:12px 14px;font-size:13px;">
+          <strong style="color:var(--primary);">Professional Services</strong>
+          <p style="color:var(--muted);margin-top:2px;">Implementation, consulting</p>
+        </div>
+        <div style="background:var(--light-bg);border-radius:6px;padding:12px 14px;font-size:13px;">
+          <strong style="color:var(--primary);">CSP Charges</strong>
+          <p style="color:var(--muted);margin-top:2px;">Cloud Service Provider costs</p>
+        </div>
+        <div style="background:var(--light-bg);border-radius:6px;padding:12px 14px;font-size:13px;">
+          <strong style="color:var(--primary);">Other Charges</strong>
+          <p style="color:var(--muted);margin-top:2px;">Miscellaneous items</p>
+        </div>
+        <div style="background:#eaf0fb;border-radius:6px;padding:12px 14px;font-size:13px;border:1px solid #a5c4f3;">
+          <strong style="color:var(--accent2);">= Total Opportunity Amount</strong>
+          <p style="color:var(--muted);margin-top:2px;">Formula field — auto-summed</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Forecasting Tags — Mandatory Field</h3>
+      <p style="margin-bottom:10px;">Every Opportunity must carry one of three forecasting tags. This field will be enforced as mandatory via Blueprint before advancing stages:</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;">
+        <span style="background:#fdecea;color:#c0392b;border:1px solid #f5b7b1;padding:6px 16px;border-radius:20px;font-size:13px;font-weight:600;">Upside</span>
+        <span style="background:#fff8ee;color:#d97706;border:1px solid #fcd38d;padding:6px 16px;border-radius:20px;font-size:13px;font-weight:600;">Strong Upside</span>
+        <span style="background:#edfaf2;color:#27ae60;border:1px solid #a8dfc0;padding:6px 16px;border-radius:20px;font-size:13px;font-weight:600;">Commit</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 4. RENEWALS ────────────────────────────────────── -->
+  <div class="section" id="renewals">
+    <div class="section-label">Section 04</div>
+    <div class="section-title">Renewal Management Engine</div>
+
+    <div class="callout callout-info">
+      <div class="callout-icon">&#9432;</div>
+      <div class="callout-body">
+        <strong>Core Design Principle</strong>
+        <p>Renewals are NOT a separate pipeline. They are managed within the same Opportunities module using Type = Renewal, governed by a dedicated Blueprint with its own 8-stage process.</p>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>Renewal Pipeline Stages</h3>
+        <ul>
+          <li>Not Due</li>
+          <li>Upcoming</li>
+          <li>In Discussion</li>
+          <li>Quote Shared</li>
+          <li>PO Received</li>
+          <li>Payment Pending</li>
+          <li>Closed Won</li>
+          <li>Churned</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Auto-Creation Triggers</h3>
+        <p style="margin-bottom:10px;">Renewal Opportunities are <strong>automatically created</strong> as new records via a scheduled Deluge function:</p>
+        <ul>
+          <li><strong>90 days</strong> before contract expiry — Stage: Upcoming</li>
+          <li><strong>60 days</strong> before contract expiry — Reminder escalation</li>
+          <li><strong>30 days</strong> before contract expiry — Urgent flag</li>
+        </ul>
+        <p style="margin-top:10px;font-size:13px;color:var(--muted);">Implemented via Zoho CRM Custom Schedule + Deluge <code>zoho.crm.createRecord()</code></p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Renewal-Specific Fields</h3>
+      <div class="grid-2" style="gap:10px;">
+        <ul>
+          <li>AMC Financial Year</li>
+          <li>AMC Month</li>
+          <li>AMC PO Number</li>
+          <li>AMC Received Date</li>
+        </ul>
+        <ul>
+          <li>Previous Contract Value</li>
+          <li>Renewal Type (Renewal / Upsell / Downsell / Churn)</li>
+          <li>Renewal Owner</li>
+          <li>Contract Expiry Date</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Renewal Ownership Model — Recommended</h3>
+      <p>We recommend a <strong>Hybrid Model</strong>: the Key Account Manager (KAM) retains primary ownership for relationship and commercial negotiation, while Customer Success (CS) is assigned as a co-owner for onboarding renewal tasks and health-check activities. The system will enforce ownership assignment via Blueprint "Before Transition" rules — a renewal cannot progress without a defined owner.</p>
+    </div>
+
+    <div class="card">
+      <h3>Key Renewal Metrics Tracked</h3>
+      <div class="grid-3" style="gap:10px;">
+        <div style="background:var(--light-bg);border-radius:6px;padding:12px 14px;font-size:13px;"><strong>Renewal Rate</strong><br><span style="color:var(--muted);">Won / Total Due</span></div>
+        <div style="background:var(--light-bg);border-radius:6px;padding:12px 14px;font-size:13px;"><strong>Churn Rate</strong><br><span style="color:var(--muted);">Churned / Total Due</span></div>
+        <div style="background:var(--light-bg);border-radius:6px;padding:12px 14px;font-size:13px;"><strong>Expansion Revenue</strong><br><span style="color:var(--muted);">Upsell delta value</span></div>
+        <div style="background:var(--light-bg);border-radius:6px;padding:12px 14px;font-size:13px;"><strong>Retention Revenue</strong><br><span style="color:var(--muted);">Renewed contract value</span></div>
+        <div style="background:var(--light-bg);border-radius:6px;padding:12px 14px;font-size:13px;"><strong>AMC Pipeline</strong><br><span style="color:var(--muted);">AMC value in funnel</span></div>
+        <div style="background:var(--light-bg);border-radius:6px;padding:12px 14px;font-size:13px;"><strong>At-Risk Accounts</strong><br><span style="color:var(--muted);">Overdue renewals</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 5. APPROVALS ───────────────────────────────────── -->
+  <div class="section" id="approvals">
+    <div class="section-label">Section 05</div>
+    <div class="section-title">Approval Workflow — Deal Desk</div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>Approval Hierarchy</h3>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:8px;">
+          <div style="background:#eaf0fb;border-radius:8px;padding:14px 16px;border-left:4px solid var(--accent2);">
+            <strong style="font-size:13px;color:var(--accent2);">Level 1</strong>
+            <p style="font-size:13.5px;color:var(--text);margin-top:2px;">GPL — Business Unit Head</p>
+          </div>
+          <div style="text-align:center;color:var(--border);font-size:18px;">&#8595;</div>
+          <div style="background:#fff3e0;border-radius:8px;padding:14px 16px;border-left:4px solid var(--accent);">
+            <strong style="font-size:13px;color:var(--accent);">Level 2</strong>
+            <p style="font-size:13.5px;color:var(--text);margin-top:2px;">Avinash — President &amp; CBO</p>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Deal Lifecycle Governance</h3>
+        <ul>
+          <li><strong>Quote Validity:</strong> 60 days from creation</li>
+          <li><strong>Extensions Allowed:</strong> Max 2 (each requires approval)</li>
+          <li><strong>Auto Closed Lost:</strong> 180 days of inactivity</li>
+          <li><strong>Extension tracking:</strong> System field counts extensions</li>
+          <li><strong>Auto-close engine:</strong> Daily Deluge schedule checks deal age</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Discount Thresholds — Per Component</h3>
+      <p style="margin-bottom:14px;color:var(--muted);font-size:13.5px;">Discounts below the threshold are auto-approved. Above the threshold, the Deal Desk approval workflow is triggered automatically.</p>
+      <table class="feasibility-table">
+        <thead>
+          <tr>
+            <th>Component</th>
+            <th>Auto-Approved Up To</th>
+            <th>Above Threshold</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>SaaS</td>
+            <td><span class="badge badge-native">30%</span></td>
+            <td>Triggers Level 1 &rarr; Level 2 Approval</td>
+          </tr>
+          <tr>
+            <td>Professional Services</td>
+            <td><span class="badge badge-native">30%</span></td>
+            <td>Triggers Level 1 &rarr; Level 2 Approval</td>
+          </tr>
+          <tr>
+            <td>Hardware</td>
+            <td><span class="badge badge-custom">10%</span></td>
+            <td>Triggers Level 1 &rarr; Level 2 Approval</td>
+          </tr>
+          <tr>
+            <td>Cloud Service Provider (CSP)</td>
+            <td><span class="badge badge-ext">0% — Always Requires Approval</span></td>
+            <td>Any discount triggers immediate approval</td>
+          </tr>
+          <tr>
+            <td>Other Charges</td>
+            <td><span class="badge badge-native">30%</span></td>
+            <td>Triggers Level 1 &rarr; Level 2 Approval</td>
+          </tr>
+          <tr>
+            <td>Hardware AMC</td>
+            <td><span class="badge badge-native">30%</span></td>
+            <td>Triggers Level 1 &rarr; Level 2 Approval</td>
+          </tr>
+          <tr>
+            <td>Software AMC</td>
+            <td><span class="badge badge-native">30%</span></td>
+            <td>Triggers Level 1 &rarr; Level 2 Approval</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="callout callout-warning" style="margin-top:14px;margin-bottom:0;">
+        <div class="callout-icon">&#9888;</div>
+        <div class="callout-body">
+          <strong>Implementation Note — Multi-Component Discount Logic</strong>
+          <p>Zoho CRM's native Approval Process supports single-field threshold conditions. To handle per-component discount thresholds across 7 components simultaneously, a <strong>Deluge custom function</strong> will evaluate all component discounts and route the approval accordingly. This is achievable but requires custom coding.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 6. GOVERNANCE ──────────────────────────────────── -->
+  <div class="section" id="governance">
+    <div class="section-label">Section 06</div>
+    <div class="section-title">Account Governance & Data Control</div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>Account Creation — Strict Control</h3>
+        <p style="margin-bottom:10px;">Only <strong>Df-OS Admin</strong> can create Account records. All other user profiles will have the "Create" permission disabled for the Accounts module.</p>
+        <p><strong>Request flow for Sales team:</strong></p>
+        <ul style="margin-top:8px;">
+          <li>Sales submits request with: Company Name, GSTIN, Billing Address, Shipping Address, Contact details</li>
+          <li>Admin validates and creates the Account</li>
+          <li>Sales is notified and account ownership assigned</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Account Hierarchy — Plants as Sub-Accounts</h3>
+        <p style="margin-bottom:10px;">Zoho CRM's native <strong>Parent Account</strong> lookup field will be used to model the corporate hierarchy:</p>
+        <div style="background:var(--light-bg);border-radius:6px;padding:12px 14px;font-size:13px;font-family:monospace;line-height:2;">
+          Parent Account (Corporate HQ)<br>
+          &nbsp;&nbsp;&#x2514;&#x2500; Plant / Location 1<br>
+          &nbsp;&nbsp;&#x2514;&#x2500; Plant / Location 2<br>
+          &nbsp;&nbsp;&#x2514;&#x2500; Plant / Location N
+        </div>
+        <p style="margin-top:8px;font-size:13px;color:var(--muted);">Revenue, activities, and Opportunities roll up to the parent account automatically.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Centralized Pricing Control</h3>
+      <p>A centralized Zoho CRM Price Book will be implemented and linked to all Quotes. Manual price override outside the approval system will be prevented via validation rules and Blueprint transitions. No quote can be submitted without products linked to the approved price list.</p>
+    </div>
+  </div>
+
+  <!-- ── 7. INTEGRATION ─────────────────────────────────── -->
+  <div class="section" id="integration">
+    <div class="section-label">Section 07</div>
+    <div class="section-title">Zoho Books & Inventory Integration</div>
+
+    <div class="card">
+      <h3>CRM ↔ Books Data Flow</h3>
+      <div style="overflow-x:auto;margin-top:8px;">
+        <table class="feasibility-table">
+          <thead>
+            <tr>
+              <th>Data Object</th>
+              <th>Direction</th>
+              <th>Method</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Quotes / Estimates</td>
+              <td>CRM &rarr; Books</td>
+              <td>Custom Deluge function (<code>ZbooksSync</code>) — already built &amp; active. Syncs line items, customer, deal details to Books Estimates. To be extended for Professional Services line items.</td>
+              <td><span class="badge badge-custom">Custom Function (Built)</span></td>
+            </tr>
+            <tr>
+              <td>Quote updates &rarr; Opportunity Amount</td>
+              <td>CRM Estimate &rarr; Deal</td>
+              <td>New Deluge function to auto-update linked Deal's Amount when Estimate total changes</td>
+              <td><span class="badge badge-custom">To Be Built</span></td>
+            </tr>
+            <tr>
+              <td>Sales Orders</td>
+              <td>CRM &rarr; Books</td>
+              <td>Custom Deluge function (<code>CRM Books Sync</code>) — already built &amp; active. Syncs Sales Order line items to Books Sales Orders.</td>
+              <td><span class="badge badge-custom">Custom Function (Built)</span></td>
+            </tr>
+            <tr>
+              <td>Invoices</td>
+              <td>Books &rarr; CRM</td>
+              <td>Invoice tracking fields on Opportunity + Books webhook to push Billed/Pending/Collected status back to CRM Deal record</td>
+              <td><span class="badge badge-custom">To Be Built</span></td>
+            </tr>
+            <tr>
+              <td>Billed / Pending / Collected Status</td>
+              <td>Books &rarr; CRM</td>
+              <td>Custom fields on Opportunity populated via Books webhook trigger on invoice create/update</td>
+              <td><span class="badge badge-custom">To Be Built</span></td>
+            </tr>
+            <tr>
+              <td>BOM (Bill of Materials) Visibility</td>
+              <td>Inventory &rarr; CRM</td>
+              <td>Custom Related List via Zoho Inventory API — Phase 2 (requires Inventory integration setup)</td>
+              <td><span class="badge badge-custom">Phase 2</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="callout callout-success">
+      <div class="callout-icon">&#10003;</div>
+      <div class="callout-body">
+        <strong>Existing Integration — Already Live</strong>
+        <p>The client has already built a custom Deluge-based integration between CRM and Zoho Books (Estimates + Sales Orders). This is a strong foundation. The scope of this engagement extends it with: reverse sync to update Opportunity Amount, invoice tracking, and financial status visibility at the Deal level.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 8. LIMITATIONS ─────────────────────────────────── -->
+  <div class="section" id="limitations">
+    <div class="section-label">Section 08</div>
+    <div class="section-title">Limitations & Recommended Additions</div>
+
+    <div class="callout callout-danger">
+      <div class="callout-icon">&#9888;</div>
+      <div class="callout-body">
+        <strong>Important: The following requirements CANNOT be fully delivered within Zoho CRM alone</strong>
+        <p>These are architectural gaps — not technical failures. Each has a clear resolution using adjacent Zoho products already in the ecosystem.</p>
+      </div>
+    </div>
+
+    <!-- Limitation 1 -->
+    <div class="limit-block">
+      <h3>&#10060; MRR (Monthly Recurring Revenue) — Not Native in Zoho CRM</h3>
+      <p style="font-size:13.5px;color:var(--muted);">
+        Zoho CRM tracks Opportunities and deal amounts — it does not understand subscription intervals, billing cycles, or recurring revenue math. There is no built-in MRR field, formula, or report in Zoho CRM. Any attempt to approximate MRR using formula fields would be manual, fragile, and inaccurate as the subscription base scales.
+      </p>
+      <div class="resolution">
+        <strong>Recommended Resolution: Add Zoho Billing to the Scope</strong>
+        <p>Zoho Billing (formerly Zoho Subscriptions) is purpose-built for SaaS subscription management. It natively tracks Active Subscriptions, Renewal Due Dates, Upgrades/Downgrades, and calculates MRR and ARR automatically. It integrates directly with Zoho CRM (subscriptions linked to Contacts/Accounts) and pushes data into Zoho Analytics for dashboard visibility. This is the correct architectural layer for MRR tracking — not CRM.</p>
+      </div>
+    </div>
+
+    <!-- Limitation 2 -->
+    <div class="limit-block">
+      <h3>&#10060; ARR (Annual Recurring Revenue) — Not Native in Zoho CRM</h3>
+      <p style="font-size:13.5px;color:var(--muted);">
+        Same root cause as MRR. ARR = MRR × 12 for monthly-billed customers, or the contracted annual value for annual subscriptions. Zoho CRM has no mechanism to distinguish one-time deal amounts from recurring contract values, making ARR calculations impossible without an external subscription ledger.
+      </p>
+      <div class="resolution">
+        <strong>Recommended Resolution: Zoho Billing + Zoho Analytics</strong>
+        <p>Zoho Billing tracks ARR natively per subscription. Zoho Analytics then combines CRM pipeline data with Billing ARR data to produce executive-level revenue dashboards showing ARR growth, contraction, and net revenue retention.</p>
+      </div>
+    </div>
+
+    <!-- Limitation 3 -->
+    <div class="limit-block">
+      <h3>&#10060; Subscription Lifecycle Tracking — Limited in CRM</h3>
+      <p style="font-size:13.5px;color:var(--muted);">
+        Tracking whether a subscription is Active, Paused, Upgraded, or Downgraded — and automatically updating status on billing events — is not a CRM function. Zoho CRM can store static custom fields (e.g., "Subscription Status") but cannot react to billing events, payment failures, or plan changes without an external trigger.
+      </p>
+      <div class="resolution">
+        <strong>Recommended Resolution: Zoho Billing as Subscription System of Record</strong>
+        <p>Zoho Billing manages the subscription state machine. When a subscription is upgraded, downgraded, or churned in Billing, a webhook or native sync updates the corresponding CRM record automatically. Custom fields in CRM will reflect the live state from Billing — no manual updates needed.</p>
+      </div>
+    </div>
+
+    <!-- Limitation 4 -->
+    <div class="limit-block">
+      <h3>&#9888; BOM Visibility in CRM — Requires Custom Integration</h3>
+      <p style="font-size:13.5px;color:var(--muted);">
+        Zoho Inventory manages Bill of Materials (via Composite Items), but there is no native way to surface BOM details inside a CRM Opportunity view. Sales teams would need to switch to Inventory to see component breakdowns.
+      </p>
+      <div class="resolution">
+        <strong>Resolution: Custom Related List via Zoho API</strong>
+        <p>A custom Deluge function will pull BOM data from Zoho Inventory's API and display it as a read-only custom related list inside the relevant Opportunity or Quote record in CRM. This provides the required visibility without leaving the CRM interface.</p>
+      </div>
+    </div>
+
+    <!-- Limitation 5 -->
+    <div class="limit-block">
+      <h3>&#9888; Sub-Partner Hierarchy in Partner Portal — Requires Custom Module</h3>
+      <p style="font-size:13.5px;color:var(--muted);">
+        Zoho CRM Portals natively support one level of external access (Partner sees their own deals). A multi-tier sub-partner hierarchy (Partner → Sub-Partner → End Customer) is not a built-in portal feature.
+      </p>
+      <div class="resolution">
+        <strong>Resolution: Custom Partner Hierarchy Module</strong>
+        <p>A custom module will model the partner-subpartner relationship. Portal access rules will be configured so each sub-partner only sees deals they own, while the parent partner sees their entire sub-partner tree. This requires custom configuration but is achievable within Zoho CRM.</p>
+      </div>
+    </div>
+
+    <!-- Summary -->
+    <div style="margin-top:24px;">
+      <div class="section-title" style="font-size:18px;">Recommended Additional Products</div>
+      <div class="grid-2">
+        <div class="card" style="border-left:4px solid #8e44ad;">
+          <h3 style="color:#8e44ad;">Zoho Billing (Critical Addition)</h3>
+          <p>Required for MRR, ARR, subscription lifecycle, upgrade/downgrade tracking. Without this, revenue metrics will be inaccurate estimates, not system-calculated values.</p>
+        </div>
+        <div class="card" style="border-left:4px solid #16a085;">
+          <h3 style="color:#16a085;">Zoho Analytics (Strongly Recommended)</h3>
+          <p>Required for cross-system dashboards (CRM + Books + Billing data in one view). Native CRM dashboards cannot pull data across multiple Zoho apps simultaneously.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 9. DASHBOARDS ──────────────────────────────────── -->
+  <div class="section" id="dashboards">
+    <div class="section-label">Section 09</div>
+    <div class="section-title">Dashboards & Reporting</div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>Sales Dashboard</h3>
+        <ul>
+          <li>Pipeline value by stage</li>
+          <li>Stage-wise distribution chart</li>
+          <li>Conversion rate by stage</li>
+          <li>Sales rep performance</li>
+          <li>Expected closures (this week / month)</li>
+          <li>Forecasting tag breakdown (Commit vs Upside)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Renewal Dashboard</h3>
+        <ul>
+          <li>Renewals due in 30 / 60 / 90 days</li>
+          <li>Renewal rate vs churn rate</li>
+          <li>At-risk renewal accounts</li>
+          <li>Expansion revenue from upsells</li>
+          <li>AMC pipeline value</li>
+          <li>Ownership coverage (renewals without owner)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Financial Dashboard</h3>
+        <ul>
+          <li>Billed vs collected revenue</li>
+          <li>Outstanding invoice amounts</li>
+          <li>MRR / ARR trend <span class="badge badge-addon" style="margin-left:4px;">Zoho Analytics</span></li>
+          <li>Revenue vs target</li>
+          <li>Collections efficiency</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Partner Dashboard</h3>
+        <ul>
+          <li>Partner-wise pipeline contribution</li>
+          <li>Partner deal conversion rates</li>
+          <li>Top performing partners</li>
+          <li>Partner vs direct revenue split</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Automated Report Schedule</h3>
+      <table class="feasibility-table" style="margin-top:8px;">
+        <thead>
+          <tr><th>Frequency</th><th>Report Contents</th><th>Recipients</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Weekly</td>
+            <td>Pipeline movement, Expected closures, New vs closed deals, At-risk deals</td>
+            <td>Sales Managers, GPL, Avinash</td>
+          </tr>
+          <tr>
+            <td>Monthly</td>
+            <td>Revenue vs target, Renewal performance, Sales rep performance, Partner contribution</td>
+            <td>Management, Finance, Sales Heads</td>
+          </tr>
+          <tr>
+            <td>Quarterly</td>
+            <td>ARR growth, Churn analysis, Partner performance review, Forecast accuracy</td>
+            <td>Leadership, Board</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── 10. FEASIBILITY MATRIX ─────────────────────────── -->
+  <div class="section" id="feasibility">
+    <div class="section-label">Section 10</div>
+    <div class="section-title">Full Feasibility Matrix</div>
+
+    <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:20px;">
+      <span class="badge badge-native" style="font-size:12px;padding:5px 14px;">Native — Out of box</span>
+      <span class="badge badge-custom" style="font-size:12px;padding:5px 14px;">Custom Work — Deluge / Configuration</span>
+      <span class="badge badge-ext" style="font-size:12px;padding:5px 14px;">Not in CRM — Needs separate product</span>
+      <span class="badge badge-addon" style="font-size:12px;padding:5px 14px;">Add-on — Additional Zoho product</span>
+    </div>
+
+    <table class="feasibility-table">
+      <thead>
+        <tr>
+          <th style="width:40%;">Requirement</th>
+          <th style="width:18%;">Status</th>
+          <th>Implementation Method</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td colspan="3" style="background:#f5f7fa;font-weight:700;font-size:12px;letter-spacing:0.5px;color:var(--primary);">MODULE & STRUCTURE</td></tr>
+        <tr><td>Rename Deals → Opportunities</td><td><span class="badge badge-native">Native</span></td><td>Setup &gt; Modules &gt; Rename</td></tr>
+        <tr><td>Opportunity Type (New / Renewal / Expansion)</td><td><span class="badge badge-native">Native</span></td><td>Custom picklist field</td></tr>
+        <tr><td>Custom pipeline stages</td><td><span class="badge badge-native">Native</span></td><td>Stage Probability Mapping</td></tr>
+        <tr><td>Deal value auto-calc (5 components)</td><td><span class="badge badge-native">Native</span></td><td>Formula fields / Subform line items</td></tr>
+        <tr><td>Forecasting tags — mandatory</td><td><span class="badge badge-native">Native</span></td><td>Custom picklist + Blueprint enforcement</td></tr>
+        <tr><td colspan="3" style="background:#f5f7fa;font-weight:700;font-size:12px;letter-spacing:0.5px;color:var(--primary);">BLUEPRINT & GOVERNANCE</td></tr>
+        <tr><td>Mandatory fields per stage transition</td><td><span class="badge badge-native">Native</span></td><td>Blueprint — During Transition fields</td></tr>
+        <tr><td>Prevent stage skipping</td><td><span class="badge badge-native">Native</span></td><td>Blueprint transition rules</td></tr>
+        <tr><td>Closed Lost from any stage</td><td><span class="badge badge-native">Native</span></td><td>Blueprint Common Transition</td></tr>
+        <tr><td>Separate renewal 8-stage Blueprint</td><td><span class="badge badge-native">Native</span></td><td>Blueprint filtered by Type = Renewal</td></tr>
+        <tr><td colspan="3" style="background:#f5f7fa;font-weight:700;font-size:12px;letter-spacing:0.5px;color:var(--primary);">APPROVAL WORKFLOW</td></tr>
+        <tr><td>2-level approval (GPL → Avinash)</td><td><span class="badge badge-native">Native</span></td><td>Multi-level Approval Process</td></tr>
+        <tr><td>Per-component discount thresholds</td><td><span class="badge badge-custom">Custom Function</span></td><td>Deluge function evaluates all 7 components</td></tr>
+        <tr><td>60-day deal validity</td><td><span class="badge badge-custom">Custom Work</span></td><td>Date field + scheduled workflow alert</td></tr>
+        <tr><td>Max 2 extensions with approval</td><td><span class="badge badge-custom">Custom Work</span></td><td>Number field + Deluge enforces limit</td></tr>
+        <tr><td>Auto Closed Lost at 180 days</td><td><span class="badge badge-custom">Custom Work</span></td><td>Daily scheduled Deluge function</td></tr>
+        <tr><td colspan="3" style="background:#f5f7fa;font-weight:700;font-size:12px;letter-spacing:0.5px;color:var(--primary);">ACCOUNT GOVERNANCE</td></tr>
+        <tr><td>Restrict account creation to Admin only</td><td><span class="badge badge-native">Native</span></td><td>Profile permissions — disable Create on Accounts</td></tr>
+        <tr><td>Sub-accounts / Plants (parent-child)</td><td><span class="badge badge-native">Native</span></td><td>Built-in Parent Account lookup field</td></tr>
+        <tr><td>Centralized Price List control</td><td><span class="badge badge-native">Native</span></td><td>Price Books + validation rules</td></tr>
+        <tr><td colspan="3" style="background:#f5f7fa;font-weight:700;font-size:12px;letter-spacing:0.5px;color:var(--primary);">RENEWAL ENGINE</td></tr>
+        <tr><td>Auto-create renewal records at 90/60/30 days</td><td><span class="badge badge-custom">Custom Work</span></td><td>Scheduled Deluge function + createRecord()</td></tr>
+        <tr><td>Renewal-specific fields (AMC, PO, etc.)</td><td><span class="badge badge-native">Native</span></td><td>Custom fields on Opportunities</td></tr>
+        <tr><td>Renewal Type picklist</td><td><span class="badge badge-native">Native</span></td><td>Custom picklist field</td></tr>
+        <tr><td>Renewal ownership enforcement</td><td><span class="badge badge-native">Native</span></td><td>Blueprint Before Transition criteria</td></tr>
+        <tr><td colspan="3" style="background:#f5f7fa;font-weight:700;font-size:12px;letter-spacing:0.5px;color:var(--primary);">BOOKS & INVENTORY INTEGRATION</td></tr>
+        <tr><td>CRM Quotes sync to Zoho Books</td><td><span class="badge badge-custom">Custom Function (Built)</span></td><td>ZbooksSync Deluge function — already live, to be extended for Prof. Services</td></tr>
+        <tr><td>Quote updates → Opportunity amount</td><td><span class="badge badge-custom">To Be Built</span></td><td>New Deluge function triggered on Estimate save</td></tr>
+        <tr><td>Sales Orders sync to Books</td><td><span class="badge badge-custom">Custom Function (Built)</span></td><td>CRM Books Sync Deluge function — already live</td></tr>
+        <tr><td>Invoice tracking + Billed/Pending/Collected on Deal</td><td><span class="badge badge-custom">To Be Built</span></td><td>Custom fields on Opportunity + Books webhook</td></tr>
+        <tr><td>BOM visibility in CRM</td><td><span class="badge badge-custom">Phase 2</span></td><td>Inventory API pull → CRM custom related list</td></tr>
+        <tr><td colspan="3" style="background:#f5f7fa;font-weight:700;font-size:12px;letter-spacing:0.5px;color:var(--primary);">REVENUE METRICS — CRITICAL LIMITATIONS</td></tr>
+        <tr><td>MRR (Monthly Recurring Revenue)</td><td><span class="badge badge-ext">Not in CRM</span></td><td>Requires Zoho Billing (native MRR engine)</td></tr>
+        <tr><td>ARR (Annual Recurring Revenue)</td><td><span class="badge badge-ext">Not in CRM</span></td><td>Requires Zoho Billing (native ARR engine)</td></tr>
+        <tr><td>Subscription lifecycle (Active/Upgrade/Churn)</td><td><span class="badge badge-ext">Not in CRM</span></td><td>Requires Zoho Billing; syncs state to CRM</td></tr>
+        <tr><td>MRR/ARR on dashboards</td><td><span class="badge badge-addon">Add-on</span></td><td>Zoho Analytics (cross-system dashboards)</td></tr>
+        <tr><td colspan="3" style="background:#f5f7fa;font-weight:700;font-size:12px;letter-spacing:0.5px;color:var(--primary);">PARTNER PORTAL</td></tr>
+        <tr><td>Partner portal — deal management access</td><td><span class="badge badge-native">Native</span></td><td>CRM Portals feature</td></tr>
+        <tr><td>Same lifecycle rules as internal deals</td><td><span class="badge badge-native">Native</span></td><td>Portal uses same CRM modules + Blueprint</td></tr>
+        <tr><td>Sub-partner hierarchy</td><td><span class="badge badge-custom">Custom Work</span></td><td>Custom module + portal permission rules</td></tr>
+        <tr><td colspan="3" style="background:#f5f7fa;font-weight:700;font-size:12px;letter-spacing:0.5px;color:var(--primary);">DASHBOARDS & REPORTING</td></tr>
+        <tr><td>Sales, Renewal, Forecast dashboards</td><td><span class="badge badge-native">Native</span></td><td>Zoho CRM native dashboards</td></tr>
+        <tr><td>Financial dashboard with MRR/ARR</td><td><span class="badge badge-addon">Add-on</span></td><td>Zoho Analytics (CRM + Books + Billing)</td></tr>
+        <tr><td>Partner dashboard</td><td><span class="badge badge-native">Native</span></td><td>CRM + Analytics</td></tr>
+        <tr><td>Automated weekly/monthly report emails</td><td><span class="badge badge-native">Native</span></td><td>Report Scheduler (built-in)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── 11. PHASES ──────────────────────────────────────── -->
+  <div class="section" id="phases">
+    <div class="section-label">Section 11</div>
+    <div class="section-title">Implementation Phases & Roadmap</div>
+
+    <div class="callout callout-warning" style="margin-bottom:16px;">
+      <div class="callout-icon">&#9888;</div>
+      <div class="callout-body">
+        <strong>Timeline anchored to Financial Year start — 1st April 2026</strong>
+        <p>Phase 1 delivers all revenue-critical configurations before the new financial year begins on 1st April. Phase 2 completes the remaining enhancements immediately after, by 10th April.</p>
+      </div>
+    </div>
+
+
+    <div class="phases">
+      <!-- PHASE 1 -->
+      <div class="phase-item">
+        <div class="phase-left">
+          <div class="phase-dot accent">1</div>
+          <div class="phase-line"></div>
+        </div>
+        <div class="phase-body">
+          <div class="phase-title">Phase 1 — Core Revenue Engine</div>
+          <span class="phase-duration">By 31st March 2026</span>
+          <p style="font-size:13.5px;color:var(--muted);margin:8px 0 12px;">Everything the team needs to operate cleanly from Day 1 of the new financial year. No loose ends going into April.</p>
+
+          <div class="grid-2" style="gap:12px;">
+            <div style="background:var(--light-bg);border-radius:8px;padding:14px 16px;">
+              <strong style="font-size:13px;color:var(--primary);display:block;margin-bottom:8px;">CRM Structure</strong>
+              <ul style="padding-left:16px;">
+                <li>Rename Deals &rarr; Opportunities</li>
+                <li>Opportunity Type field (New / Renewal / Expansion)</li>
+                <li>Fix pipeline stages — Sales &amp; Renewal</li>
+                <li>Deal value components (5 fields + auto-total formula)</li>
+                <li>Forecasting tags — mandatory field</li>
+                <li>All renewal-specific fields (AMC, PO, Expiry, etc.)</li>
+              </ul>
+            </div>
+            <div style="background:var(--light-bg);border-radius:8px;padding:14px 16px;">
+              <strong style="font-size:13px;color:var(--primary);display:block;margin-bottom:8px;">Blueprints & Governance</strong>
+              <ul style="padding-left:16px;">
+                <li>Blueprint — New Business pipeline (6 stages)</li>
+                <li>Blueprint — Renewal pipeline (8 stages)</li>
+                <li>Mandatory fields enforced at every stage transition</li>
+                <li>Account creation locked to Df-OS Admin only</li>
+                <li>Centralized Price Book setup</li>
+              </ul>
+            </div>
+            <div style="background:var(--light-bg);border-radius:8px;padding:14px 16px;">
+              <strong style="font-size:13px;color:var(--primary);display:block;margin-bottom:8px;">Approvals & Automation</strong>
+              <ul style="padding-left:16px;">
+                <li>Deal Desk approval workflow (GPL &rarr; Avinash)</li>
+                <li>Per-component discount threshold logic (all 7 components)</li>
+                <li>60-day deal validity + 2-extension approval logic</li>
+                <li>180-day auto Closed Lost scheduled function</li>
+                <li>Renewal auto-creation at 90 / 60 / 30 days before expiry</li>
+              </ul>
+            </div>
+            <div style="background:var(--light-bg);border-radius:8px;padding:14px 16px;">
+              <strong style="font-size:13px;color:var(--primary);display:block;margin-bottom:8px;">Books Integration & Dashboards</strong>
+              <ul style="padding-left:16px;">
+                <li>Extend ZbooksSync — add Professional Services line items</li>
+                <li>Quote update &rarr; Opportunity Amount auto-sync</li>
+                <li>Sales Dashboard (pipeline, conversions, forecast)</li>
+                <li>Renewal Dashboard (due dates, churn, AMC pipeline)</li>
+                <li>Automated weekly report scheduler</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PHASE 2 -->
+      <div class="phase-item">
+        <div class="phase-left">
+          <div class="phase-dot blue">2</div>
+        </div>
+        <div class="phase-body">
+          <div class="phase-title">Phase 2 — Financial Visibility & Advanced Features</div>
+          <span class="phase-duration">1st April – 10th April 2026</span>
+          <p style="font-size:13.5px;color:var(--muted);margin:8px 0 12px;">Completes the full revenue management picture with financial data visibility, MRR/ARR tracking, and Partner Portal — built on the stable foundation from Phase 1.</p>
+
+          <div class="grid-2" style="gap:12px;">
+            <div style="background:var(--light-bg);border-radius:8px;padding:14px 16px;">
+              <strong style="font-size:13px;color:var(--primary);display:block;margin-bottom:8px;">Books — Financial Data in CRM</strong>
+              <ul style="padding-left:16px;">
+                <li>Invoice tracking fields on Opportunity</li>
+                <li>Billed / Pending / Collected status via Books webhook</li>
+                <li>Financial summary panel on each Deal record</li>
+                <li>BOM visibility from Zoho Inventory (custom related list)</li>
+              </ul>
+            </div>
+            <div style="background:var(--light-bg);border-radius:8px;padding:14px 16px;">
+              <strong style="font-size:13px;color:var(--primary);display:block;margin-bottom:8px;">Revenue Metrics</strong>
+              <ul style="padding-left:16px;">
+                <li>Zoho Billing setup — subscription plans &amp; MRR/ARR activation</li>
+                <li>Billing &harr; CRM sync (subscription status, renewal dates)</li>
+                <li>Financial Dashboard — Billed vs Collected, Outstanding</li>
+                <li>MRR / ARR dashboard via Zoho Analytics</li>
+              </ul>
+            </div>
+            <div style="background:var(--light-bg);border-radius:8px;padding:14px 16px;">
+              <strong style="font-size:13px;color:var(--primary);display:block;margin-bottom:8px;">Partner Portal</strong>
+              <ul style="padding-left:16px;">
+                <li>Partner Portal setup with deal management access</li>
+                <li>Same lifecycle rules (Blueprint) applied to partner deals</li>
+                <li>Sub-partner hierarchy custom module</li>
+                <li>Partner Dashboard — contribution, conversion, performance</li>
+              </ul>
+            </div>
+            <div style="background:var(--light-bg);border-radius:8px;padding:14px 16px;">
+              <strong style="font-size:13px;color:var(--primary);display:block;margin-bottom:8px;">Handover & Training</strong>
+              <ul style="padding-left:16px;">
+                <li>User Acceptance Testing — Sales, Finance, Management</li>
+                <li>Role-based training sessions</li>
+                <li>Admin handover guide</li>
+                <li>Monthly / Quarterly report scheduler setup</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 12. DELIVERABLES ───────────────────────────────── -->
+  <div class="section" id="deliverables">
+    <div class="section-label">Section 12</div>
+    <div class="section-title">Deliverables</div>
+
+    <div class="summary-grid">
+      <div class="summary-stat">
+        <span class="num green">18+</span>
+        <label>Native CRM<br>Configurations</label>
+      </div>
+      <div class="summary-stat">
+        <span class="num yellow">10+</span>
+        <label>Custom Deluge<br>Functions</label>
+      </div>
+      <div class="summary-stat">
+        <span class="num blue">5</span>
+        <label>Dashboards<br>Built</label>
+      </div>
+      <div class="summary-stat">
+        <span class="num" style="color:#8e44ad;">3</span>
+        <label>Add-on Products<br>Integrated</label>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-top:16px;">
+      <div class="card">
+        <h3>Technical Deliverables</h3>
+        <ul>
+          <li>Fully configured Zoho CRM with restructured Opportunities module</li>
+          <li>2 Blueprints (New Business + Renewal lifecycle)</li>
+          <li>Multi-level Deal Desk approval workflow</li>
+          <li>All Deluge custom functions (renewal auto-create, discount logic, auto-close)</li>
+          <li>Zoho Books integration with quote-amount sync</li>
+          <li>BOM related list from Zoho Inventory</li>
+          <li>Zoho Billing setup with MRR/ARR activation</li>
+          <li>Partner Portal configuration</li>
+          <li>5 dashboards + automated report scheduler</li>
+          <li>Zoho Analytics cross-system workspace</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Non-Technical Deliverables</h3>
+        <ul>
+          <li>Current system audit report</li>
+          <li>Architecture design document (this document)</li>
+          <li>Field schema and Blueprint design spec</li>
+          <li>Approval workflow logic documentation</li>
+          <li>Integration mapping document</li>
+          <li>Dashboard design wireframes</li>
+          <li>User training materials (role-wise)</li>
+          <li>Admin handover guide</li>
+          <li>Post go-live support SLA</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout callout-success" style="margin-top:16px;">
+      <div class="callout-icon">&#10003;</div>
+      <div class="callout-body">
+        <strong>Commitment</strong>
+        <p>We will challenge current workflows, recommend SaaS best practices, and ensure every configuration decision is driven by scalability, data accuracy, and governance. The outcome will be a Revenue Management System — not just a CRM.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 13. PRICING ───────────────────────────────────────── -->
+  <div class="section" id="pricing">
+    <div class="section-label">Section 13</div>
+    <div class="section-title">Investment</div>
+
+    <div style="background:var(--card-bg);border:2px solid var(--accent);border-radius:12px;padding:36px 40px;text-align:center;max-width:580px;margin:0 auto;">
+      <p style="font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">One-Time Setup Fee</p>
+      <div style="font-size:56px;font-weight:800;color:var(--primary);line-height:1;">₹50,000</div>
+      <p style="color:var(--muted);font-size:14px;margin-top:8px;">Covers complete Phase 1 + Phase 2 delivery</p>
+
+      <div style="border-top:1px solid var(--border);margin:28px 0;"></div>
+
+      <div style="display:flex;justify-content:center;gap:40px;flex-wrap:wrap;margin-bottom:28px;">
+        <div style="text-align:center;">
+          <div style="font-size:22px;font-weight:800;color:var(--accent);">₹25,000</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:4px;">Advance to begin</div>
+        </div>
+        <div style="color:var(--border);font-size:28px;line-height:1.8;">+</div>
+        <div style="text-align:center;">
+          <div style="font-size:22px;font-weight:800;color:var(--green);">₹25,000</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:4px;">On Phase 1 delivery (31st March)</div>
+        </div>
+      </div>
+
+      <div style="background:var(--light-bg);border-radius:8px;padding:16px 20px;text-align:left;">
+        <p style="font-size:13px;color:var(--muted);margin-bottom:8px;font-weight:600;color:var(--text);">What's included:</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;">
+          <p style="font-size:13px;color:var(--muted);">&#10003; &nbsp;Full CRM restructure</p>
+          <p style="font-size:13px;color:var(--muted);">&#10003; &nbsp;2 Blueprints</p>
+          <p style="font-size:13px;color:var(--muted);">&#10003; &nbsp;Deal Desk approval workflow</p>
+          <p style="font-size:13px;color:var(--muted);">&#10003; &nbsp;All Deluge automation functions</p>
+          <p style="font-size:13px;color:var(--muted);">&#10003; &nbsp;Books integration extension</p>
+          <p style="font-size:13px;color:var(--muted);">&#10003; &nbsp;Invoice &amp; financial sync</p>
+          <p style="font-size:13px;color:var(--muted);">&#10003; &nbsp;5 Dashboards + report scheduler</p>
+          <p style="font-size:13px;color:var(--muted);">&#10003; &nbsp;Training &amp; handover</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── 14. NEXT STEPS ────────────────────────────────────── -->
+  <div class="section" id="next-steps">
+    <div class="section-label">Section 14</div>
+    <div class="section-title">Next Steps</div>
+
+    <div class="callout callout-info" style="margin-bottom:28px;">
+      <div class="callout-icon">&#9432;</div>
+      <div class="callout-body">
+        <strong>We are confident this proposal provides a clear path forward</strong>
+        <p>To initiate this project and secure our timeline, please follow the steps below. Given the Phase 1 deadline of 31st March 2026, early confirmation is critical to ensure on-time delivery.</p>
+      </div>
+    </div>
+
+    <div class="phases">
+      <div class="phase-item">
+        <div class="phase-left">
+          <div class="phase-dot accent">1</div>
+          <div class="phase-line"></div>
+        </div>
+        <div class="phase-body">
+          <div class="phase-title">Formal Acceptance</div>
+          <p style="font-size:13.5px;color:var(--muted);margin-top:4px;">Confirm your acceptance of this proposal via email or WhatsApp.</p>
+        </div>
+      </div>
+
+      <div class="phase-item">
+        <div class="phase-left">
+          <div class="phase-dot accent">2</div>
+          <div class="phase-line"></div>
+        </div>
+        <div class="phase-body">
+          <div class="phase-title">Share GST Number</div>
+          <p style="font-size:13.5px;color:var(--muted);margin-top:4px;">Please provide your GST number in the same email or WhatsApp thread for invoice purposes.</p>
+        </div>
+      </div>
+
+      <div class="phase-item">
+        <div class="phase-left">
+          <div class="phase-dot accent">3</div>
+          <div class="phase-line"></div>
+        </div>
+        <div class="phase-body">
+          <div class="phase-title">Proforma Invoice</div>
+          <p style="font-size:13.5px;color:var(--muted);margin-top:4px;">Upon acceptance, we will immediately issue a Proforma Invoice for the agreed advance amount.</p>
+        </div>
+      </div>
+
+      <div class="phase-item">
+        <div class="phase-left">
+          <div class="phase-dot accent">4</div>
+          <div class="phase-line"></div>
+        </div>
+        <div class="phase-body">
+          <div class="phase-title">Advance Payment</div>
+          <p style="font-size:13.5px;color:var(--muted);margin-top:4px;margin-bottom:14px;">Please remit the advance amount to the following bank account to formally commence Phase 1:</p>
+          <div style="background:var(--light-bg);border:1px solid var(--border);border-radius:8px;padding:18px 22px;display:inline-block;min-width:340px;">
+            <table style="border-collapse:collapse;font-size:13.5px;width:100%;">
+              <tr>
+                <td style="padding:5px 16px 5px 0;color:var(--muted);white-space:nowrap;font-weight:600;">A/C Name</td>
+                <td style="padding:5px 0;color:var(--text);font-weight:700;">DIGIWAH TECHNOSYS LLP</td>
+              </tr>
+              <tr>
+                <td style="padding:5px 16px 5px 0;color:var(--muted);white-space:nowrap;font-weight:600;">Account Type</td>
+                <td style="padding:5px 0;color:var(--text);">Current</td>
+              </tr>
+              <tr>
+                <td style="padding:5px 16px 5px 0;color:var(--muted);white-space:nowrap;font-weight:600;">Account No.</td>
+                <td style="padding:5px 0;color:var(--text);font-weight:700;">435405000231</td>
+              </tr>
+              <tr>
+                <td style="padding:5px 16px 5px 0;color:var(--muted);white-space:nowrap;font-weight:600;">IFSC Code</td>
+                <td style="padding:5px 0;color:var(--text);font-weight:700;">ICIC0004354</td>
+              </tr>
+              <tr>
+                <td style="padding:5px 16px 5px 0;color:var(--muted);white-space:nowrap;font-weight:600;">Swift Code</td>
+                <td style="padding:5px 0;color:var(--text);">ICICINBBCTS</td>
+              </tr>
+              <tr>
+                <td style="padding:5px 16px 5px 0;color:var(--muted);white-space:nowrap;font-weight:600;">Bank Name</td>
+                <td style="padding:5px 0;color:var(--text);">ICICI Bank</td>
+              </tr>
+              <tr>
+                <td style="padding:5px 16px 5px 0;color:var(--muted);white-space:nowrap;font-weight:600;">Branch</td>
+                <td style="padding:5px 0;color:var(--muted);font-size:12.5px;">SCO 74, Airport Road, JLPL Industrial Area,<br>Mohali, Punjab – 140308</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="phase-item">
+        <div class="phase-left">
+          <div class="phase-dot accent">5</div>
+        </div>
+        <div class="phase-body">
+          <div class="phase-title">Contract Signing & Project Kickoff</div>
+          <p style="font-size:13.5px;color:var(--muted);margin-top:4px;">Once advance payment is confirmed, we will provide the Terms of Service Contract for final signature — fully activating project commencement.</p>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:10px;padding:24px 28px;margin-top:28px;">
+      <p style="font-size:14px;color:var(--text);margin-bottom:12px;">Please feel free to reach out to discuss this proposal further:</p>
+      <div style="display:flex;gap:32px;flex-wrap:wrap;">
+        <div>
+          <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Contact Person</div>
+          <div style="font-size:15px;font-weight:700;color:var(--primary);">Bipanjeet Singh</div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Phone / WhatsApp</div>
+          <div style="font-size:15px;font-weight:700;color:var(--primary);">+91 91155 20303</div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Email</div>
+          <div style="font-size:15px;font-weight:700;color:var(--primary);">business@digiwah.com</div>
+        </div>
+      </div>
+      <p style="font-size:14px;color:var(--muted);margin-top:20px;padding-top:16px;border-top:1px solid var(--border);">We look forward to the opportunity to partner with you. <strong style="color:var(--text);">Thank you.</strong></p>
+    </div>
+
+  </div>
+
+</div><!-- /page-wrap -->
+
+<!-- ── FOOTER ─────────────────────────────────────────── -->
+<div class="doc-footer">
+  <div>
+    <strong>Zoho CRM + Books + Inventory Revamp</strong> &mdash; Solution Architecture Proposal<br> 
+    Prepared for Df-OS &nbsp;|&nbsp; March 2026 &nbsp;|&nbsp; Version 1.0
+  </div>
+  <div style="text-align:right;">
+    Confidential &mdash; For internal review only<br>
+    Subject to change based on audit findings
+  </div>
+</div>
+
+</body>
+</html>
