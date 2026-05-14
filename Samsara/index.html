@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Samsara Cottages — Guest Journey Flow</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F5F0E8;
+    --warm-white: #FAF7F2;
+    --forest: #2D4A3E;
+    --forest-light: #3D6455;
+    --gold: #B8975A;
+    --gold-light: #D4AF72;
+    --terracotta: #C17A5A;
+    --sky: #5B8FA8;
+    --lavender: #8B7BA8;
+    --muted: #8A8070;
+    --dark: #1A2820;
+    --wa-green: #25D366;
+    --zoho-blue: #E42527;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+    color: var(--dark);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grain texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  .page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 48px 32px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* HEADER */
+  .header {
+    text-align: center;
+    margin-bottom: 56px;
+    animation: fadeDown 0.8s ease both;
+  }
+
+  .header-eyebrow {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 12px;
+  }
+
+  .header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 300;
+    color: var(--forest);
+    line-height: 1.15;
+    margin-bottom: 10px;
+  }
+
+  .header h1 em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .header-sub {
+    font-size: 14px;
+    color: var(--muted);
+    font-weight: 400;
+    letter-spacing: 0.3px;
+  }
+
+  .header-rule {
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 20px auto 0;
+  }
+
+  /* LEGEND */
+  .legend {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-bottom: 48px;
+    animation: fadeUp 0.8s 0.2s ease both;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12.5px;
+    color: var(--dark);
+    font-weight: 400;
+  }
+
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* PHASE SECTIONS */
+  .phase {
+    margin-bottom: 40px;
+    animation: fadeUp 0.7s ease both;
+  }
+
+  .phase:nth-child(1) { animation-delay: 0.1s; }
+  .phase:nth-child(2) { animation-delay: 0.25s; }
+  .phase:nth-child(3) { animation-delay: 0.4s; }
+  .phase:nth-child(4) { animation-delay: 0.55s; }
+
+  .phase-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+
+  .phase-badge {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+
+  .phase-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 400;
+    color: var(--forest);
+  }
+
+  .phase-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--gold-light), transparent);
+    opacity: 0.4;
+  }
+
+  /* FLOW ROW */
+  .flow-row {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    position: relative;
+  }
+
+  /* STEP CARD */
+  .step {
+    flex: 1;
+    background: #FFFFFF;
+    border-radius: 12px;
+    padding: 20px 18px;
+    position: relative;
+    border: 1px solid rgba(184, 151, 90, 0.18);
+    box-shadow: 0 2px 14px rgba(45, 74, 62, 0.07);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    min-width: 0;
+  }
+
+  .step:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(45, 74, 62, 0.1);
+  }
+
+  .step-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    margin-bottom: 12px;
+    flex-shrink: 0;
+  }
+
+  .step-trigger {
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    opacity: 0.8;
+  }
+
+  .step-title {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--forest);
+    margin-bottom: 7px;
+    line-height: 1.3;
+  }
+
+  .step-desc {
+    font-size: 12.5px;
+    line-height: 1.65;
+    color: #5A5248;
+    font-weight: 400;
+  }
+
+  .step-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 10px;
+    padding: 4px 10px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+
+  /* Connector arrows */
+  .arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 6px;
+    flex-shrink: 0;
+    color: var(--gold);
+    font-size: 18px;
+    opacity: 0.5;
+    margin-top: -8px;
+  }
+
+  /* Phase color themes */
+  .presales .phase-badge { background: rgba(91, 143, 168, 0.12); color: var(--sky); }
+  .presales .step-icon { background: rgba(91, 143, 168, 0.1); }
+  .presales .step-trigger { color: var(--sky); }
+  .presales .step-tag { background: rgba(91, 143, 168, 0.1); color: var(--sky); }
+  .presales .arrow { color: var(--sky); }
+
+  .booking .phase-badge { background: rgba(184, 151, 90, 0.12); color: var(--gold); }
+  .booking .step-icon { background: rgba(184, 151, 90, 0.1); }
+  .booking .step-trigger { color: var(--gold); }
+  .booking .step-tag { background: rgba(184, 151, 90, 0.1); color: var(--gold); }
+  .booking .arrow { color: var(--gold); }
+
+  .experience .phase-badge { background: rgba(45, 74, 62, 0.1); color: var(--forest); }
+  .experience .step-icon { background: rgba(45, 74, 62, 0.08); }
+  .experience .step-trigger { color: var(--forest-light); }
+  .experience .step-tag { background: rgba(45, 74, 62, 0.08); color: var(--forest); }
+  .experience .arrow { color: var(--forest); }
+
+  .retention .phase-badge { background: rgba(193, 122, 90, 0.12); color: var(--terracotta); }
+  .retention .step-icon { background: rgba(193, 122, 90, 0.1); }
+  .retention .step-trigger { color: var(--terracotta); }
+  .retention .step-tag { background: rgba(193, 122, 90, 0.1); color: var(--terracotta); }
+  .retention .arrow { color: var(--terracotta); }
+
+  /* VISIBILITY BAND */
+  .visibility-band {
+    background: linear-gradient(135deg, var(--forest) 0%, var(--forest-light) 100%);
+    border-radius: 14px;
+    padding: 28px 32px;
+    margin: 40px 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 24px;
+    position: relative;
+    overflow: hidden;
+    animation: fadeUp 0.7s 0.6s ease both;
+  }
+
+  .visibility-band::before {
+    content: '';
+    position: absolute;
+    top: -30px; right: -30px;
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    background: rgba(184, 151, 90, 0.08);
+  }
+
+  .visibility-band::after {
+    content: '';
+    position: absolute;
+    bottom: -20px; left: 40px;
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    background: rgba(255,255,255, 0.04);
+  }
+
+  .vis-item {
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .vis-number {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 38px;
+    font-weight: 300;
+    color: var(--gold-light);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .vis-label {
+    font-size: 12.5px;
+    color: rgba(255,255,255,0.85);
+    font-weight: 400;
+    letter-spacing: 0.3px;
+    line-height: 1.6;
+  }
+
+  .vis-divider {
+    width: 1px;
+    background: rgba(255,255,255,0.1);
+    position: absolute;
+    top: 10%; bottom: 10%;
+    right: 0;
+  }
+
+  .vis-item:last-child .vis-divider { display: none; }
+
+  .vis-band-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    text-align: center;
+    margin-bottom: 20px;
+    grid-column: 1 / -1;
+    font-style: italic;
+  }
+
+  /* IVRSECTION */
+  .ivr-section {
+    background: var(--warm-white);
+    border: 1px solid rgba(184, 151, 90, 0.15);
+    border-radius: 14px;
+    padding: 28px 32px;
+    margin-bottom: 40px;
+    display: flex;
+    gap: 32px;
+    align-items: flex-start;
+    animation: fadeUp 0.7s 0.5s ease both;
+  }
+
+  .ivr-icon-wrap {
+    width: 52px;
+    height: 52px;
+    background: rgba(139, 123, 168, 0.12);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+  }
+
+  .ivr-content h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-weight: 400;
+    color: var(--forest);
+    margin-bottom: 8px;
+  }
+
+  .ivr-content p {
+    font-size: 13.5px;
+    color: #5A5248;
+    line-height: 1.75;
+    font-weight: 400;
+    margin-bottom: 14px;
+  }
+
+  .ivr-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .ivr-pill {
+    background: rgba(139, 123, 168, 0.12);
+    color: #6B5A8A;
+    padding: 5px 13px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  /* PHASE CONNECTOR */
+  .phase-connector {
+    text-align: center;
+    margin: -12px 0 28px;
+    position: relative;
+  }
+
+  .phase-connector::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 1px;
+    height: 30px;
+    background: linear-gradient(180deg, rgba(184,151,90,0.3), rgba(184,151,90,0.05));
+  }
+
+  .phase-connector span {
+    background: var(--cream);
+    padding: 0 12px;
+    font-size: 18px;
+    position: relative;
+    z-index: 1;
+    opacity: 0.4;
+  }
+
+  /* FOOTER NOTE */
+  .footer-note {
+    background: rgba(45, 74, 62, 0.05);
+    border-left: 3px solid var(--gold);
+    border-radius: 0 8px 8px 0;
+    padding: 16px 20px;
+    margin-top: 40px;
+    font-size: 13.5px;
+    color: #5A5248;
+    line-height: 1.75;
+    font-weight: 400;
+    animation: fadeUp 0.7s 0.7s ease both;
+  }
+
+  .footer-note strong {
+    color: var(--forest);
+    font-weight: 500;
+  }
+
+  /* Digiwah credit */
+  .credit {
+    text-align: center;
+    margin-top: 36px;
+    font-size: 11px;
+    color: rgba(138, 128, 112, 0.5);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    .flow-row { flex-direction: column; }
+    .arrow { transform: rotate(90deg); padding: 4px 0; }
+    .visibility-band { grid-template-columns: 1fr; }
+    .ivr-section { flex-direction: column; }
+    .legend { gap: 14px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-eyebrow">Digiwah Technosys × Samsara Cottages</div>
+    <h1>The <em>Automated</em> Guest Journey</h1>
+    <p class="header-sub">How WhatsApp API + Zoho CRM transforms your 2-person team into a full guest experience engine</p>
+    <div class="header-rule"></div>
+  </div>
+
+  <!-- LEGEND -->
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-dot" style="background:#25D366"></div>
+      WhatsApp API (Automated)
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:#2D4A3E"></div>
+      Zoho CRM Action
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:#8B7BA8"></div>
+      My Operator IVR
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:#B8975A"></div>
+      Manual (Your Team)
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       PHASE 1 — PRE-SALES
+  ═══════════════════════════════════════════ -->
+  <div class="phase presales">
+    <div class="phase-header">
+      <div class="phase-badge">Phase 01</div>
+      <div class="phase-title">Pre-Sales — Inquiry to Interest</div>
+      <div class="phase-line"></div>
+    </div>
+
+    <div class="flow-row">
+
+      <div class="step">
+        <div class="step-icon">💬</div>
+        <div class="step-trigger">Trigger: Guest messages</div>
+        <div class="step-title">Inquiry Arrives on WhatsApp</div>
+        <div class="step-desc">Guest discovers Samsara on Instagram, Google, or word-of-mouth and sends a WhatsApp message asking about availability, pricing, or rooms.</div>
+        <div class="step-tag">⏱ Currently: Manual reply</div>
+      </div>
+
+      <div class="arrow">→</div>
+
+      <div class="step">
+        <div class="step-icon">🤖</div>
+        <div class="step-trigger">Automated: AI Chatbot</div>
+        <div class="step-title">Chatbot Responds Instantly</div>
+        <div class="step-desc">AI chatbot replies within seconds — sends resort overview, room types, tariff card, and availability calendar. Works 24/7, even at 11 PM on weekends.</div>
+        <div class="step-tag" style="background:rgba(37,211,102,0.1);color:#1a9e50">✦ WhatsApp API</div>
+      </div>
+
+      <div class="arrow">→</div>
+
+      <div class="step">
+        <div class="step-icon">📋</div>
+        <div class="step-trigger">Automated: CRM Action</div>
+        <div class="step-title">Lead Created in Zoho CRM</div>
+        <div class="step-desc">Chatbot interaction auto-creates a lead record in CRM — name, number, dates of interest, room preference — all captured without your team typing a word.</div>
+        <div class="step-tag" style="background:rgba(45,74,62,0.08);color:#2D4A3E">✦ Zoho CRM</div>
+      </div>
+
+      <div class="arrow">→</div>
+
+      <div class="step">
+        <div class="step-icon">🙋</div>
+        <div class="step-trigger">Manual: Your Team Steps In</div>
+        <div class="step-title">Team Handles Hot Leads Only</div>
+        <div class="step-desc">Your team only engages when the guest signals intent — "I want to book." CRM assigns the lead, sends a task notification, and shows full conversation history.</div>
+        <div class="step-tag" style="background:rgba(184,151,90,0.1);color:#B8975A">✦ Human Touch</div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="phase-connector"><span>↓</span></div>
+
+  <!-- ═══════════════════════════════════════════
+       PHASE 2 — BOOKING
+  ═══════════════════════════════════════════ -->
+  <div class="phase booking">
+    <div class="phase-header">
+      <div class="phase-badge">Phase 02</div>
+      <div class="phase-title">Booking — Confirmation to Payment</div>
+      <div class="phase-line"></div>
+    </div>
+
+    <div class="flow-row">
+
+      <div class="step">
+        <div class="step-icon">📅</div>
+        <div class="step-trigger">Action: Guest Decides</div>
+        <div class="step-title">Dates Confirmed by Guest</div>
+        <div class="step-desc">Guest confirms check-in / check-out dates and room choice. Team updates the CRM deal stage to "Booking Confirmed" — one click triggers the rest.</div>
+        <div class="step-tag">✦ Zoho CRM Deal Stage</div>
+      </div>
+
+      <div class="arrow">→</div>
+
+      <div class="step">
+        <div class="step-icon">📄</div>
+        <div class="step-trigger">Automated: From Yanolja</div>
+        <div class="step-title">Booking Confirmation Sent</div>
+        <div class="step-desc">Team generates the confirmation PDF from Yanolja as usual. CRM workflow automatically sends a WhatsApp message with booking summary — no manual forwarding.</div>
+        <div class="step-tag" style="background:rgba(37,211,102,0.1);color:#1a9e50">✦ WhatsApp API</div>
+      </div>
+
+      <div class="arrow">→</div>
+
+      <div class="step">
+        <div class="step-icon">💰</div>
+        <div class="step-trigger">Automated: Payment Follow-up</div>
+        <div class="step-title">Advance Payment Reminder</div>
+        <div class="step-desc">If advance payment is pending, CRM sends an automated WhatsApp reminder after 24 hours — politely, with payment details. No awkward manual follow-ups.</div>
+        <div class="step-tag" style="background:rgba(37,211,102,0.1);color:#1a9e50">✦ WhatsApp API</div>
+      </div>
+
+      <div class="arrow">→</div>
+
+      <div class="step">
+        <div class="step-icon">✅</div>
+        <div class="step-trigger">CRM Stage Update</div>
+        <div class="step-title">Deal Moves to "Paid"</div>
+        <div class="step-desc">Once payment is received, team marks the deal "Paid." Zoho CRM now holds the complete guest record — dates, contact, room, payment status, all in one place.</div>
+        <div class="step-tag" style="background:rgba(45,74,62,0.08);color:#2D4A3E">✦ Zoho CRM</div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="phase-connector"><span>↓</span></div>
+
+  <!-- ═══════════════════════════════════════════
+       PHASE 3 — GUEST EXPERIENCE
+  ═══════════════════════════════════════════ -->
+  <div class="phase experience">
+    <div class="phase-header">
+      <div class="phase-badge">Phase 03</div>
+      <div class="phase-title">Guest Experience — Pre-Arrival to Check-Out</div>
+      <div class="phase-line"></div>
+    </div>
+
+    <div class="flow-row">
+
+      <div class="step">
+        <div class="step-icon">🌄</div>
+        <div class="step-trigger">Automated: 3 Days Before</div>
+        <div class="step-title">Pre-Arrival Message</div>
+        <div class="step-desc">"We're excited to welcome you to Samsara! Here's everything you need — directions, what to pack, local weather, and your cottage details."</div>
+        <div class="step-tag" style="background:rgba(37,211,102,0.1);color:#1a9e50">✦ WhatsApp API</div>
+      </div>
+
+      <div class="arrow">→</div>
+
+      <div class="step">
+        <div class="step-icon">🏡</div>
+        <div class="step-trigger">Automated: Check-in Day</div>
+        <div class="step-title">Welcome Message Sent</div>
+        <div class="step-desc">"Your cottage is ready! Check-in is at 2 PM. Here's the address pin and our host's number for arrival assistance. See you soon 🌿"</div>
+        <div class="step-tag" style="background:rgba(37,211,102,0.1);color:#1a9e50">✦ WhatsApp API</div>
+      </div>
+
+      <div class="arrow">→</div>
+
+      <div class="step">
+        <div class="step-icon">☀️</div>
+        <div class="step-trigger">Automated: Day 2 of Stay</div>
+        <div class="step-title">In-Stay Check-in Message</div>
+        <div class="step-desc">"How is your stay going? Let us know if you need anything at all. We're just a message away." — A small touch that creates memorable hospitality.</div>
+        <div class="step-tag" style="background:rgba(37,211,102,0.1);color:#1a9e50">✦ WhatsApp API</div>
+      </div>
+
+      <div class="arrow">→</div>
+
+      <div class="step">
+        <div class="step-icon">👋</div>
+        <div class="step-trigger">Automated: Check-out Day</div>
+        <div class="step-title">Check-Out + Review Ask</div>
+        <div class="step-desc">"Thank you for choosing Samsara! We hope it was magical. If you loved your stay, a Google review means the world to us 🌟 [link]"</div>
+        <div class="step-tag" style="background:rgba(37,211,102,0.1);color:#1a9e50">✦ WhatsApp API</div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="phase-connector"><span>↓</span></div>
+
+  <!-- ═══════════════════════════════════════════
+       PHASE 4 — RETENTION
+  ═══════════════════════════════════════════ -->
+  <div class="phase retention">
+    <div class="phase-header">
+      <div class="phase-badge">Phase 04</div>
+      <div class="phase-title">Retention — Re-Engagement & Revenue</div>
+      <div class="phase-line"></div>
+    </div>
+
+    <div class="flow-row">
+
+      <div class="step">
+        <div class="step-icon">🗂️</div>
+        <div class="step-trigger">Always Available</div>
+        <div class="step-title">Guest Database in CRM</div>
+        <div class="step-desc">Every past guest is in Zoho CRM — tagged by stay date, room type, group size, source. Your entire guest history, searchable and actionable.</div>
+        <div class="step-tag" style="background:rgba(45,74,62,0.08);color:#2D4A3E">✦ Zoho CRM</div>
+      </div>
+
+      <div class="arrow">→</div>
+
+      <div class="step">
+        <div class="step-icon">📢</div>
+        <div class="step-trigger">Campaign: Peak Season</div>
+        <div class="step-title">Broadcast to Full Database</div>
+        <div class="step-desc">Launch a WhatsApp broadcast for Diwali, New Year, or summer offers — to 200, 500, or 2000 past guests at once. From Zoho, in minutes, not hours.</div>
+        <div class="step-tag" style="background:rgba(37,211,102,0.1);color:#1a9e50">✦ WhatsApp Broadcast</div>
+      </div>
+
+      <div class="arrow">→</div>
+
+      <div class="step">
+        <div class="step-icon">🎁</div>
+        <div class="step-trigger">Targeted: Past Guests</div>
+        <div class="step-title">Loyalty & Special Offers</div>
+        <div class="step-desc">"It's been 6 months since your last stay! Book again this season and get complimentary breakfast 🍳" — personalised, automated, impossible to do manually.</div>
+        <div class="step-tag" style="background:rgba(193,122,90,0.1);color:#C17A5A">✦ Retention Campaign</div>
+      </div>
+
+      <div class="arrow">→</div>
+
+      <div class="step">
+        <div class="step-icon">🔄</div>
+        <div class="step-trigger">Result</div>
+        <div class="step-title">Repeat Bookings Flow In</div>
+        <div class="step-desc">Replies from the broadcast drop straight back into the chatbot flow — and the whole cycle begins again, fully automated, without your team lifting a finger.</div>
+        <div class="step-tag" style="background:rgba(184,151,90,0.1);color:#B8975A">✦ Full Loop</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- IVR SECTION -->
+  <div class="ivr-section">
+    <div class="ivr-icon-wrap">📞</div>
+    <div class="ivr-content">
+      <h3>My Operator IVR — Connected to Zoho CRM</h3>
+      <p>Every call that comes in on your IVR today disappears after it rings. With Zoho CRM integration, every call is captured, logged, and acted on — automatically. Missed a call from a hot lead? CRM creates a callback task and notifies your team. Picked up a call? The guest's profile pops up on screen so your team knows exactly who's calling and what their last interaction was.</p>
+      <div class="ivr-pills">
+        <span class="ivr-pill">📲 Incoming call → Guest profile pops up in CRM</span>
+        <span class="ivr-pill">❌ Missed call → Auto follow-up task created</span>
+        <span class="ivr-pill">🗒️ Call notes logged against guest record</span>
+        <span class="ivr-pill">⏱ Call duration tracked</span>
+        <span class="ivr-pill">📊 Full call history per guest</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- VISIBILITY BAND -->
+  <div class="visibility-band">
+    <div class="vis-band-title">What Dhruv Sees — At a Glance, Any Time</div>
+
+    <div class="vis-item">
+      <div class="vis-number">Pipeline</div>
+      <div class="vis-label">All inquiries, bookings &amp; confirmed guests in one view. Know where every guest stands in real-time.</div>
+      <div class="vis-divider"></div>
+    </div>
+
+    <div class="vis-item">
+      <div class="vis-number">Reports</div>
+      <div class="vis-label">Monthly bookings, conversion rate from inquiry to paid, peak vs off-season trends — all automatic.</div>
+      <div class="vis-divider"></div>
+    </div>
+
+    <div class="vis-item">
+      <div class="vis-number">Mobile App</div>
+      <div class="vis-label">Zoho CRM on your phone. Check pipeline, reply to leads, and review upcoming arrivals from anywhere.</div>
+    </div>
+  </div>
+
+  <!-- FOOTER NOTE -->
+  <div class="footer-note">
+    <strong>Note for Dhruv:</strong> Your team of 2 doesn't change — and they don't need to learn complex software from day one. We set everything up, train both of them in 2–3 sessions, and the automations do the heavy lifting from the first week. The goal is simple: <strong>your team spends time on guests, not on messaging.</strong>
+  </div>
+
+  <div class="credit">Prepared by Digiwah Technosys LLP · digiwah.com</div>
+
+</div>
+</body>
+</html>
