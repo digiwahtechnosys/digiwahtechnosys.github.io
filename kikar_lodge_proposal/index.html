@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Kikar Lodge — Phase 2 Architecture Proposal</title>
+<style>
+  :root{
+    --green:#2f5d3a;
+    --green-light:#4a7c52;
+    --sand:#f6f3ec;
+    --ink:#23271f;
+    --muted:#6b6f64;
+    --line:#e3ddd0;
+    --accent:#c08a2d;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);
+    background:var(--sand);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:880px;margin:0 auto;padding:0 24px;}
+
+  /* Header */
+  header{
+    background:var(--green);
+    color:#fff;
+    padding:56px 0 48px;
+  }
+  header .wrap{display:flex;flex-direction:column;gap:6px;}
+  .eyebrow{
+    text-transform:uppercase;
+    letter-spacing:3px;
+    font-size:12px;
+    color:var(--accent);
+    font-weight:600;
+  }
+  header h1{font-size:34px;font-weight:700;line-height:1.2;}
+  header p{color:#d8e3d6;font-size:16px;margin-top:8px;}
+  .meta{margin-top:22px;font-size:13px;color:#bcd0bb;}
+
+  /* Sections */
+  section{padding:42px 0;border-bottom:1px solid var(--line);}
+  h2{
+    font-size:22px;
+    color:var(--green);
+    margin-bottom:8px;
+    display:flex;align-items:center;gap:10px;
+  }
+  h2 .num{
+    background:var(--green);color:#fff;
+    width:30px;height:30px;border-radius:50%;
+    display:inline-flex;align-items:center;justify-content:center;
+    font-size:15px;font-weight:700;flex:none;
+  }
+  .lead{color:var(--muted);margin-bottom:22px;max-width:640px;}
+
+  /* Deliverable cards */
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  .card{
+    background:#fff;border:1px solid var(--line);border-radius:12px;
+    padding:22px;
+  }
+  .card h3{font-size:17px;color:var(--ink);margin-bottom:8px;}
+  .card p{font-size:14.5px;color:var(--muted);}
+  .card .solves{
+    margin-top:12px;font-size:13px;color:var(--green-light);
+    border-top:1px dashed var(--line);padding-top:10px;
+  }
+  .card .solves b{color:var(--green);}
+
+  /* Pricing */
+  table{width:100%;border-collapse:collapse;background:#fff;border-radius:12px;overflow:hidden;border:1px solid var(--line);}
+  th,td{text-align:left;padding:14px 18px;font-size:14.5px;border-bottom:1px solid var(--line);}
+  th{background:var(--green);color:#fff;font-weight:600;}
+  td.amt{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;}
+  tr:last-child td{border-bottom:none;}
+  .sub td{color:var(--muted);font-size:13px;padding-top:4px;padding-bottom:14px;}
+  .total-row td{background:var(--sand);font-weight:700;font-size:16px;color:var(--green);}
+  .note{font-size:12.5px;color:var(--muted);margin-top:12px;}
+
+  ul.inc{list-style:none;margin:10px 0 0;}
+  ul.inc li{padding:5px 0 5px 24px;position:relative;font-size:14.5px;color:var(--ink);}
+  ul.inc li::before{content:"✓";position:absolute;left:0;color:var(--accent);font-weight:700;}
+
+  /* Footer */
+  footer{background:var(--ink);color:#cfd2c8;padding:34px 0;font-size:13.5px;}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  footer b{color:#fff;}
+
+  @media (max-width:680px){
+    .grid{grid-template-columns:1fr;}
+    header h1{font-size:26px;}
+  }
+  @media print{
+    body{background:#fff;}
+    section{break-inside:avoid;}
+    header{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <span class="eyebrow">Phase 2 &middot; Architecture Proposal</span>
+    <h1>The Kikar Lodge — Zoho CRM Enhancement</h1>
+    <p>Upgrading from a shared data system to a complete reservations &amp; intelligence platform.</p>
+    <div class="meta">Prepared for The Kikar Lodge &nbsp;|&nbsp; Date: 22 May 2026</div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <h2><span class="num">1</span>Where We Are &amp; Why Phase 2</h2>
+    <p class="lead">
+      In Phase 1 we centralised all your WhatsApp and call leads into Zoho CRM so nothing is lost and data keeps growing.
+      It works well for leads — but reservations still live in Excel on the side, and the Professional plan does not allow
+      the customisations needed to fix that. Phase 2 closes that gap and adds the intelligence layer on top.
+    </p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2><span class="num">2</span>What We Will Build</h2>
+    <p class="lead">Four focused deliverables — each tied directly to a problem you face today.</p>
+    <div class="grid">
+
+      <div class="card">
+        <h3>Enterprise Plan Upgrade</h3>
+        <p>Move your account from Professional to Enterprise to unlock the customisation engine (custom modules, functions, validations, custom views).</p>
+        <div class="solves"><b>Solves:</b> The plan ceiling that currently blocks any reservation build.</div>
+      </div>
+
+      <div class="card">
+        <h3>Customised Reservation Module</h3>
+        <p>A dedicated reservations module with a calendar-style availability view. If a room is booked for a date range, the system blocks it from being assigned to anyone else for the same dates.</p>
+        <div class="solves"><b>Solves:</b> Removes Excel — bookings and double-booking checks live inside CRM.</div>
+      </div>
+
+      <div class="card">
+        <h3>Custom Dashboards &amp; Reports</h3>
+        <p>Decision-ready dashboards — leads, conversions, occupancy and reservation trends — in one live view for your team and management.</p>
+        <div class="solves"><b>Solves:</b> Faster, clearer decisions without manual report-pulling.</div>
+      </div>
+
+      <div class="card">
+        <h3>AI WhatsApp Bot Training</h3>
+        <p>Your connected WhatsApp AI bot is trained to respond conversationally to guest enquiries and feed qualified leads straight into the CRM.</p>
+        <div class="solves"><b>Solves:</b> Responsive 24/7 enquiry handling that grows your lead pipeline.</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2><span class="num">3</span>Implementation Includes</h2>
+    <ul class="inc">
+      <li>Customised Reservation module with availability calendar &amp; double-booking prevention</li>
+      <li>Custom dashboards &amp; reports configured to your KPIs</li>
+      <li>AI WhatsApp bot training &amp; CRM lead routing</li>
+      <li>On-site training for your team</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2><span class="num">4</span>Investment</h2>
+    <p class="lead">Transparent, one-time engagement plus the licence upgrade.</p>
+    <table>
+      <thead>
+        <tr><th>Item</th><th style="text-align:right;">Amount (INR)</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Zoho CRM Enterprise upgrade — all users (pro-rata)</td>
+          <td class="amt">₹25,405</td>
+        </tr>
+        <tr class="sub"><td colspan="2">+ 18% GST &nbsp;(₹4,572.90)&nbsp; → &nbsp;₹29,977.90</td></tr>
+        <tr>
+          <td>One-time implementation<br><span style="font-size:12.5px;color:var(--muted);">Reservation module, dashboards &amp; reports, AI bot training, on-site training</span></td>
+          <td class="amt">₹25,000</td>
+        </tr>
+        <tr class="sub"><td colspan="2">+ 18% GST &nbsp;(₹4,500.00)&nbsp; → &nbsp;₹29,500.00</td></tr>
+        <tr class="total-row">
+          <td>Total Investment</td>
+          <td class="amt">₹59,477.90</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="note">
+      * Enterprise upgrade is billed pro-rata for all users to align with your current renewal cycle. GST charged at 18% as applicable.
+      WhatsApp message sending continues to consume credits as per your existing plan.
+    </p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div><b>Ready to proceed?</b> On approval, we begin with the Enterprise upgrade and reservation build.</div>
+    <div>Prepared by Digiwah Technosys</div>
+  </div>
+</footer>
+
+</body>
+</html>
