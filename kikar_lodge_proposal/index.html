@@ -430,6 +430,45 @@
   .pay-row.total .pay-when { font-size: 15px; }
   .pay-row.total .pay-amt { font-size: 19px; color: #C2410C; }
 
+  /* ---------------- ANNUAL RECURRING ---------------- */
+  .rec-box {
+    margin-top: 24px; background: var(--cyan-light); border: 1px solid #A5F3FC;
+    border-radius: 16px; overflow: hidden;
+  }
+  .rec-head {
+    display: flex; align-items: center; gap: 12px;
+    padding: 18px 26px; border-bottom: 1px solid #A5F3FC; background: rgba(255,255,255,0.6);
+  }
+  .rec-head .rec-icon {
+    width: 40px; height: 40px; background: white; border: 1px solid #A5F3FC;
+    border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px;
+  }
+  .rec-head h3 { font-size: 16px; font-weight: 800; color: #155E75; margin-bottom: 3px; }
+  .rec-head p { font-size: 13px; color: #0E7490; }
+  .rec-scroll { overflow-x: auto; }
+  table.rec { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 460px; background: white; }
+  table.rec th {
+    text-align: left; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+    color: var(--slate-light); padding: 12px 26px; border-bottom: 1px solid var(--border);
+  }
+  table.rec td { padding: 14px 26px; border-bottom: 1px solid var(--border); color: var(--slate-mid); }
+  table.rec td strong { color: var(--slate); font-weight: 700; }
+  table.rec td .meta { display: block; font-size: 12px; color: var(--slate-light); margin-top: 2px; font-weight: 500; }
+  table.rec th.amt, table.rec td.amt {
+    text-align: right; font-variant-numeric: tabular-nums; font-weight: 700; color: var(--slate); white-space: nowrap;
+  }
+  table.rec tr.sub td { background: #FBFDFE; color: var(--slate-light); font-weight: 600; }
+  table.rec tr.sub td.amt { color: var(--slate-mid); }
+  table.rec tr.grand td {
+    background: var(--cyan-light); border-bottom: none; font-weight: 800; color: #155E75; font-size: 15px;
+  }
+  table.rec tr.grand td .meta { color: #0E7490; font-weight: 600; }
+  table.rec tr.grand td.amt { color: #155E75; font-size: 24px; letter-spacing: -0.5px; vertical-align: top; }
+  .rec-note {
+    padding: 14px 26px; background: rgba(255,255,255,0.6); border-top: 1px solid #A5F3FC;
+    font-size: 12.5px; color: #0E7490;
+  }
+
   /* ---------------- NEXT STEPS ---------------- */
   .ns-list { display: flex; flex-direction: column; gap: 14px; max-width: 840px; margin: 0 auto; }
   .ns-step {
@@ -487,6 +526,9 @@
     .investment-grid { grid-template-columns: 1fr; }
     .pay-row { grid-template-columns: 52px 1fr; gap: 14px; padding: 16px 18px; }
     .pay-amt { grid-column: 2; text-align: left; margin-top: 6px; }
+    table.rec th, table.rec td { padding: 13px 18px; }
+    table.rec tr.grand td.amt { font-size: 20px; }
+    .rec-head, .rec-note { padding-left: 18px; padding-right: 18px; }
     .ns-step { grid-template-columns: 38px 1fr; gap: 14px; padding: 18px 20px; }
     .ns-num { width: 38px; height: 38px; font-size: 15px; }
     .section-header h2 { font-size: 27px; }
@@ -1000,7 +1042,7 @@
       <div class="stage-card">
         <div class="stage-num">5</div>
         <h4>AI &amp; handover</h4>
-        <p>Zia enabled and the Claude connection configured on your phones. Documentation delivered and close support through the first weeks of live operation.</p>
+        <p>Zia enabled and the Claude connection configured on your phones. SOP documents and training videos handed over for every department.</p>
       </div>
     </div>
   </div>
@@ -1054,7 +1096,7 @@
       <div class="investment-grid">
         <div class="inv-card onetime">
           <div class="inv-label">One-time implementation</div>
-          <div class="inv-price">₹3,45,000 <span class="inv-price-suffix">+ 18% GST</span></div>
+          <div class="inv-price">₹3,20,000 <span class="inv-price-suffix">+ 18% GST</span></div>
           <div class="inv-price-note">Complete setup across all five systems</div>
           <div class="inv-includes">
             <div class="inv-include-item"><span class="inv-check">✓</span>Configuration of all five Zoho applications</div>
@@ -1063,14 +1105,15 @@
             <div class="inv-include-item"><span class="inv-check">✓</span>Accounting, GST and opening balance setup</div>
             <div class="inv-include-item"><span class="inv-check">✓</span>Google Workspace migration for 20 users</div>
             <div class="inv-include-item"><span class="inv-check">✓</span>Staff training across all departments</div>
+            <div class="inv-include-item"><span class="inv-check">✓</span>SOP documents and training videos for every department</div>
             <div class="inv-include-item"><span class="inv-check">✓</span>Documentation and go-live support</div>
           </div>
         </div>
 
         <div class="inv-card ongoing">
           <div class="inv-label">Ongoing support</div>
-          <div class="inv-price">₹10,000 <span class="inv-price-suffix">/ month + 18% GST</span></div>
-          <div class="inv-price-note">Annual maintenance contract</div>
+          <div class="inv-price">₹15,000 <span class="inv-price-suffix">/ month + 18% GST</span></div>
+          <div class="inv-price-note">Annual maintenance contract — your current ₹5,000 support, plus ₹10,000 per month for the new systems</div>
           <div class="inv-includes">
             <div class="inv-include-item"><span class="inv-check">✓</span>Priority support for your team</div>
             <div class="inv-include-item"><span class="inv-check">✓</span>Monitoring of all background automations</div>
@@ -1094,7 +1137,7 @@
             <div class="pay-when">On confirmation of the order</div>
             <div class="pay-desc">Work begins straight away. This advance covers <strong>Stage 1 — Workplace</strong> and <strong>Stage 2 — Foundation</strong>, both of which are delivered against it.</div>
           </div>
-          <div class="pay-amt">₹1,38,000<span>+ 18% GST</span></div>
+          <div class="pay-amt">₹1,28,000<span>+ 18% GST</span></div>
         </div>
 
         <div class="pay-row">
@@ -1103,7 +1146,7 @@
             <div class="pay-when">At the start of Stage 3 — Outlets</div>
             <div class="pay-desc">Due when Stages 1 and 2 are delivered and work begins on the outlets — Zoho POS setup, counters and staff training across all five outlets.</div>
           </div>
-          <div class="pay-amt">₹86,250<span>+ 18% GST</span></div>
+          <div class="pay-amt">₹80,000<span>+ 18% GST</span></div>
         </div>
 
         <div class="pay-row">
@@ -1112,7 +1155,7 @@
             <div class="pay-when">At the start of Stages 4 &amp; 5 — Guest accounts, AI and handover</div>
             <div class="pay-desc">Due when the outlets are live and work begins on guest accounts and consolidated billing, followed by AI enablement — Zia and the Claude connection — and handover.</div>
           </div>
-          <div class="pay-amt">₹86,250<span>+ 18% GST</span></div>
+          <div class="pay-amt">₹80,000<span>+ 18% GST</span></div>
         </div>
 
         <div class="pay-row">
@@ -1121,16 +1164,41 @@
             <div class="pay-when">One month after handover and training</div>
             <div class="pay-desc">Held back deliberately. We stay accountable through your first full month of live operation, and this is released once the system has run that month without issue.</div>
           </div>
-          <div class="pay-amt">₹34,500<span>+ 18% GST</span></div>
+          <div class="pay-amt">₹32,000<span>+ 18% GST</span></div>
         </div>
 
         <div class="pay-row total">
           <div class="pay-pct">100%</div>
           <div>
             <div class="pay-when">Total implementation fee</div>
-            <div class="pay-desc">₹4,07,100 including 18% GST</div>
+            <div class="pay-desc">₹3,77,600 including 18% GST</div>
           </div>
-          <div class="pay-amt">₹3,45,000<span>+ 18% GST</span></div>
+          <div class="pay-amt">₹3,20,000<span>+ 18% GST</span></div>
+        </div>
+      </div>
+
+      <div class="rec-box">
+        <div class="rec-head">
+          <div class="rec-icon">🔄</div>
+          <div>
+            <h3>Total annual recurring</h3>
+            <p>What your Zoho software costs to run each year once the full platform is live</p>
+          </div>
+        </div>
+        <div class="rec-scroll">
+          <table class="rec">
+            <thead>
+              <tr><th>Recurring item</th><th class="amt">Per year</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Zoho CRM — Enterprise</strong><span class="meta">5 users · already in place today · rate shown is already discounted</span></td><td class="amt">₹1,33,920</td></tr>
+              <tr><td><strong>Zoho Books, Inventory, POS &amp; Workplace</strong><span class="meta">The four new licences, after the 5% partner discount</span></td><td class="amt">₹89,798</td></tr>
+              <tr class="grand"><td>Total annual recurring<span class="meta">₹2,63,987 including 18% GST</span></td><td class="amt">₹2,23,718</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="rec-note">
+          ℹ️ &nbsp;Zoho licence costs only, paid to Zoho. The one-time implementation fee and the monthly support charge shown above are separate, and the implementation fee is not repeated in future years.
         </div>
       </div>
     </div>
