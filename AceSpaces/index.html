@@ -174,6 +174,24 @@ section{padding:58px 0;border-bottom:1px solid var(--line)}
 .lg{display:flex;align-items:center;gap:6px;font-size:.75rem;color:var(--muted)}
 .lg-sw{width:11px;height:11px;border-radius:3px;flex:none;border:1px solid}
 
+/* ---------- zoho one ---------- */
+.zstats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px}
+.zstat{border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;background:var(--soft);text-align:center}
+.zstat .k{font-size:1.7rem;font-weight:670;letter-spacing:-.025em;line-height:1.2;color:var(--teal-2)}
+.zstat .l{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-top:4px}
+.apps{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.app{border:1px solid var(--line);border-radius:8px;padding:14px 16px;background:var(--bg)}
+.app .a-n{font-size:.88rem;font-weight:630;display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.app .a-n::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--teal);flex:none}
+.app .a-r{font-size:.78rem;color:var(--muted);line-height:1.5}
+.suite{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin-top:20px}
+.suite-row{display:flex;gap:16px;padding:11px 16px;border-bottom:1px solid var(--line-2);align-items:baseline}
+.suite-row:last-child{border-bottom:none}
+.s-cat{flex:none;width:170px;font-size:.71rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:640}
+.s-apps{display:flex;flex-wrap:wrap;gap:6px}
+.chip.used{background:var(--teal-soft);border-color:var(--teal);color:var(--teal-2);font-weight:620}
+.suite-cap{font-size:.78rem;color:var(--muted);margin-top:10px}
+
 /* ---------- lists ---------- */
 ul.clean{list-style:none;padding:0;margin:0}
 ul.clean li{
@@ -253,7 +271,7 @@ footer{padding:44px 0 56px;background:var(--soft)}
 
 /* ---------- responsive ---------- */
 @media (max-width:900px){
-  .layers,.g3{grid-template-columns:1fr 1fr}
+  .layers,.g3,.apps{grid-template-columns:1fr 1fr}
   .split{grid-template-columns:1fr;gap:26px}
   .f-grid{grid-template-columns:1fr 1fr}
 }
@@ -261,10 +279,12 @@ footer{padding:44px 0 56px;background:var(--soft)}
   .wrap{padding:0 18px}
   .hero{padding:44px 0 38px}
   .hero h1{font-size:1.95rem}
-  .layers,.g2,.g3,.price-two{grid-template-columns:1fr}
+  .layers,.g2,.g3,.price-two,.zstats,.apps{grid-template-columns:1fr}
   .f-grid{grid-template-columns:1fr}
   .hero-facts{gap:22px}
   section{padding:42px 0}
+  .suite-row{flex-direction:column;gap:6px}
+  .s-cat{width:auto}
   .step::after{display:none}
   .slots{grid-template-columns:repeat(2,1fr)}
 }
@@ -813,11 +833,121 @@ footer{padding:44px 0 56px;background:var(--soft)}
   </div>
 </section>
 
+<!-- ============ 8. ZOHO ONE ============ -->
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">08 — The Zoho One suite</span>
+      <h2>45+ apps in the licence, eight put to work</h2>
+      <p class="muted">
+        Zoho One bundles 45+ business applications under a single subscription. This build
+        configures the eight that run coworking operations — everything else in the suite
+        stays available to Ace Spaces at no additional licence cost.
+      </p>
+    </div>
+
+    <div class="zstats">
+      <div class="zstat"><div class="k">45+</div><div class="l">Apps in Zoho One</div></div>
+      <div class="zstat"><div class="k">8</div><div class="l">Configured in this build</div></div>
+      <div class="zstat"><div class="k">₹0</div><div class="l">Extra licence cost to add more</div></div>
+    </div>
+
+    <div class="apps">
+      <div class="app">
+        <div class="a-n">Zoho CRM</div>
+        <div class="a-r">Leads, deals, clients, memberships, cabins, passes and visitors — the master record.</div>
+      </div>
+      <div class="app">
+        <div class="a-n">Zoho Books</div>
+        <div class="a-r">GST invoicing, recurring billing, payments, TDS and vendor accounts.</div>
+      </div>
+      <div class="app">
+        <div class="a-n">Zoho Sign</div>
+        <div class="a-r">Digital signing of membership agreements — no printing, no scanning.</div>
+      </div>
+      <div class="app">
+        <div class="a-n">Zoho Desk</div>
+        <div class="a-r">Member issues raised in the app become tickets, tracked to resolution.</div>
+      </div>
+      <div class="app">
+        <div class="a-n">Zoho Forms</div>
+        <div class="a-r">Website enquiry forms that land directly in CRM as leads.</div>
+      </div>
+      <div class="app">
+        <div class="a-n">Zoho Survey</div>
+        <div class="a-r">Feedback and NPS surveys sent automatically at the right moments.</div>
+      </div>
+      <div class="app">
+        <div class="a-n">Zoho Analytics</div>
+        <div class="a-r">The dashboards in section 07 — occupancy, revenue, sales, retention.</div>
+      </div>
+      <div class="app">
+        <div class="a-n">Zoho Inventory</div>
+        <div class="a-r">Stock control for consumables — pantry, printing, stationery, access cards.</div>
+      </div>
+    </div>
+
+    <h3 style="margin:28px 0 4px">The full suite</h3>
+    <p class="muted small" style="margin-bottom:0">Every app included in the Zoho One licence. Highlighted apps are the ones configured in this build.</p>
+    <div class="suite">
+      <div class="suite-row">
+        <div class="s-cat">Sales</div>
+        <div class="s-apps"><span class="chip used">CRM</span><span class="chip">Bigin</span><span class="chip">Bookings</span><span class="chip">SalesIQ</span></div>
+      </div>
+      <div class="suite-row">
+        <div class="s-cat">Marketing</div>
+        <div class="s-apps"><span class="chip used">Forms</span><span class="chip used">Survey</span><span class="chip">Campaigns</span><span class="chip">Marketing Automation</span><span class="chip">Social</span><span class="chip">Sites</span><span class="chip">PageSense</span><span class="chip">Backstage</span><span class="chip">Thrive</span><span class="chip">LandingPage</span><span class="chip">Commerce</span></div>
+      </div>
+      <div class="suite-row">
+        <div class="s-cat">Customer support</div>
+        <div class="s-apps"><span class="chip used">Desk</span><span class="chip">Assist</span><span class="chip">Lens</span></div>
+      </div>
+      <div class="suite-row">
+        <div class="s-cat">Finance</div>
+        <div class="s-apps"><span class="chip used">Books</span><span class="chip">Invoice</span><span class="chip">Expense</span><span class="chip">Billing</span><span class="chip">Checkout</span><span class="chip">Payroll</span></div>
+      </div>
+      <div class="suite-row">
+        <div class="s-cat">Operations &amp; projects</div>
+        <div class="s-apps"><span class="chip used">Inventory</span><span class="chip">Projects</span><span class="chip">Sprints</span></div>
+      </div>
+      <div class="suite-row">
+        <div class="s-cat">Human resources</div>
+        <div class="s-apps"><span class="chip">People</span><span class="chip">Recruit</span></div>
+      </div>
+      <div class="suite-row">
+        <div class="s-cat">Communication</div>
+        <div class="s-apps"><span class="chip">Mail</span><span class="chip">Cliq</span><span class="chip">Connect</span><span class="chip">Meeting</span><span class="chip">TeamInbox</span><span class="chip">Vani</span></div>
+      </div>
+      <div class="suite-row">
+        <div class="s-cat">Office &amp; productivity</div>
+        <div class="s-apps"><span class="chip used">Sign</span><span class="chip">Writer</span><span class="chip">Sheet</span><span class="chip">Show</span><span class="chip">Notebook</span><span class="chip">WorkDrive</span><span class="chip">Learn</span><span class="chip">Vault</span></div>
+      </div>
+      <div class="suite-row">
+        <div class="s-cat">BI &amp; low-code</div>
+        <div class="s-apps"><span class="chip used">Analytics</span><span class="chip">Creator</span><span class="chip">Flow</span><span class="chip">DataPrep</span><span class="chip">RPA</span></div>
+      </div>
+      <div class="suite-row">
+        <div class="s-cat">Legal</div>
+        <div class="s-apps"><span class="chip">Contracts</span></div>
+      </div>
+    </div>
+    <p class="suite-cap">Suite contents as of August 2026 — Zoho adds new apps to the bundle over time, at no change in licence cost.</p>
+
+    <div class="note teal">
+      <strong>Room to grow.</strong> When Ace Spaces is ready for email marketing
+      (Zoho Campaigns), social media scheduling (Zoho Social), HR and payroll
+      (Zoho People, Zoho Payroll), expense claims (Zoho Expense) or project tracking
+      (Zoho Projects), they're already in the licence — only configuration is needed.
+      Internal team chat runs on Zoho Cliq's free plan from day one.
+    </div>
+  </div>
+</section>
+
 <!-- ============ 9. SCOPE ============ -->
 <section>
   <div class="wrap">
     <div class="sec-head">
-      <span class="sec-num">08 — Scope</span>
+      <span class="sec-num">09 — Scope</span>
       <h2>What's included</h2>
     </div>
 
@@ -855,7 +985,7 @@ footer{padding:44px 0 56px;background:var(--soft)}
 <section>
   <div class="wrap">
     <div class="sec-head">
-      <span class="sec-num">09 — Delivery</span>
+      <span class="sec-num">10 — Delivery</span>
       <h2>Four to five weeks to live</h2>
       <p class="muted">Sales goes live in week two, so the team gets value before the full build finishes.</p>
     </div>
@@ -917,7 +1047,7 @@ footer{padding:44px 0 56px;background:var(--soft)}
 <section>
   <div class="wrap">
     <div class="sec-head">
-      <span class="sec-num">10 — Investment</span>
+      <span class="sec-num">11 — Investment</span>
       <h2>Costs</h2>
       <p class="muted">All figures in INR, exclusive of 18% GST.</p>
     </div>
@@ -959,7 +1089,7 @@ footer{padding:44px 0 56px;background:var(--soft)}
           </tr>
           <tr>
             <td><strong>Zoho One</strong> — Flexible plan</td>
-            <td>1 user, billed annually. Includes CRM, Books, Desk, Sign, Survey, Analytics, Inventory and 40+ apps</td>
+            <td>1 user, billed annually. Includes CRM, Books, Desk, Sign, Forms, Survey, Analytics, Inventory and 40+ more apps</td>
             <td class="num"><span class="strike">₹42,000</span><strong>₹39,060</strong><br><span class="tiny muted">per year</span></td>
           </tr>
           <tr>
@@ -1014,7 +1144,7 @@ footer{padding:44px 0 56px;background:var(--soft)}
 <section style="border-bottom:none">
   <div class="wrap">
     <div class="sec-head">
-      <span class="sec-num">11 — Next steps</span>
+      <span class="sec-num">12 — Next steps</span>
       <h2>Getting started</h2>
     </div>
     <div class="grid g3">
